@@ -1,0 +1,1 @@
+https://react-native-community.github.io/react-native-camera/docs/tests

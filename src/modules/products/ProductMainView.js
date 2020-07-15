@@ -12,6 +12,7 @@ import {
     TouchableOpacity,
     Dimensions
 } from 'react-native';
+
 import {
     Container,
     Header,
@@ -26,6 +27,7 @@ import {
     Body
 } from 'native-base';
 
+import { RNCamera } from 'react-native-camera';
 
 export default class ProductMainView extends Component {
     constructor(props) {
@@ -41,6 +43,9 @@ export default class ProductMainView extends Component {
         this.arrayholder = [];
         //Index of the offset to load from web API
         this.page = 1;
+        this.loadMoreData = this.loadMoreData.bind(this);
+        this.updateSearch = this.updateSearch.bind(this);
+        this.searchResult = this.searchResult.bind(this);
     }
 
     setupAPI(page) {
@@ -50,7 +55,7 @@ export default class ProductMainView extends Component {
             .then(responseJson => {
                 console.log(responseJson.data.rows);
                 //Successful response from the API Call 
-                this.offset = this.offset + 1;
+                this.page = this.page + 1;
                 //After the response increasing the offset for the next API call.
                 this.setState({
                     serverData: [...this.state.serverData, ...responseJson.data.rows],
@@ -65,11 +70,13 @@ export default class ProductMainView extends Component {
     }
 
     loadMoreData() {
+      alert("load more");
         //On click of Load More button We will call the web API again
-        this.setState({ fetching_from_server: true }, () => {
-            this.offset = this.offset + 1;
-            this.setupAPI(this.offset);
-        });
+      this.setState({
+        isLoading: true,
+        search: ''
+      });
+      this.setupAPI(this.page);
     }
 
     componentDidMount() {
@@ -77,7 +84,35 @@ export default class ProductMainView extends Component {
     }
 
     updateSearch = (search) => {
-        this.setState({ search });
+      this.setState({ search });
+      if(search.length >= 3){
+        this.searchResult(search);
+        // alert("search ne");
+      }
+    }
+
+    searchResult = (search) => {
+      this.setState({
+        isLoading: true
+      });
+
+      fetch('https://annhienstore.herokuapp.com/api/v1/products/search?seach=' + search)
+        //Sending the currect offset with get request
+        .then(response => response.json())
+        .then(responseJson => {
+            console.warn(search);
+            //Successful response from the API Call 
+            //After the response increasing the offset for the next API call.
+            this.setState({
+                serverData: [...this.state.serverData, ...responseJson.data.data.rows],
+                //adding the new data with old one available in Data Source of the List
+                isLoading: false,
+                //updating the loading state to false
+            });
+        })
+        .catch(error => {
+          console.warn(error);
+        });
     }
 
     renderFooter() {
@@ -104,7 +139,6 @@ export default class ProductMainView extends Component {
 
     render() {
         const { search } = this.state;
-        console.log(this.state.isLoading);
         return (
             <Container>
                 <Header searchBar rounded>
@@ -112,13 +146,16 @@ export default class ProductMainView extends Component {
                         <Icon name="ios-search" />
                         <Input
                             placeholder="Search"
-                            onChangeText={this.updateSearch}
+                            onChangeText={(text) => this.updateSearch(text)}
                             value={search}
                             autoCapitalize="none"
+                            underlineColorAndroid="transparent"
+                            autoFocus={false}
+                            disableFullscreenUI={false}
                         />
                         <Icon name="ios-people" />
                     </Item>
-                    <Button transparent>
+                    <Button transparent onPress={this.searchResult}>
                         <Text>Search</Text>
                     </Button>
                 </Header>
