@@ -1,1 +1,0 @@
-https://medium.com/@relferreira/react-native-redux-react-navigation-ecec4014d648
