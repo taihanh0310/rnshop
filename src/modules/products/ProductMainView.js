@@ -10,7 +10,8 @@ import {
   Image,
   FlatList,
   TouchableOpacity,
-  Dimensions
+  Dimensions, 
+  Vibration
 } from 'react-native';
 
 import {
@@ -39,7 +40,9 @@ export default class ProductMainView extends Component {
       //Data Source for the FlatList
       fetching_from_server: false,
       //Loading state used while loading more data
-      torchOn: false
+      torchOn: false,
+      isCameraVisiable: false,
+      textButtonCamera: "Open Camera"
     }
     this.arrayholder = [];
     //Index of the offset to load from web API
@@ -49,6 +52,7 @@ export default class ProductMainView extends Component {
     this.searchResult = this.searchResult.bind(this);
     // this.handleTourch = this.handleTourch.bind(this);
     this.onBarCodeRead = this.onBarCodeRead.bind(this);
+    this.showCameraView = this.showCameraView.bind(this);
   }
 
   setupAPI(page) {
@@ -148,10 +152,18 @@ export default class ProductMainView extends Component {
   }
   onBarCodeRead = (e) => {
     Alert.alert("Barcode value is" + e.data, "Barcode type is" + e.type);
+    Vibration.vibrate(500, false);
+  }
+
+  showCameraView = () => {
+    this.setState({ 
+      isCameraVisible: !this.state.isCameraVisible,
+      textButtonCamera: "Turn off Camera"
+    });
   }
 
   render() {
-    const { search } = this.state;
+    const { search, isCameraVisible, textButtonCamera  } = this.state;
     return (
       <Container>
         <Header searchBar rounded>
@@ -172,16 +184,26 @@ export default class ProductMainView extends Component {
             <Text>Search</Text>
           </Button>
         </Header>
-        <View style={{ paddingBottom: 20, height: Math.round(Dimensions.get('window').height) - 70 }}>
-          <RNCamera
-            ref={ref => {
-              this.camera = ref;
-            }}
-            onBarCodeRead={this.onBarCodeRead}
-            style={{ flex: 1, width: '100%' }}
-          >
-            <Text style={{ backgroundColor: 'white' }}>BARCODE SCANNER</Text>
-          </RNCamera>
+        <View style={{ paddingBottom: 20, height: Math.round(Dimensions.get('window').height) - 70, display:'flex', justifyContent:'center', alignContent:'center' }}>
+          {
+            (isCameraVisible) 
+            ? 
+            (
+              <RNCamera
+              ref={ref => {
+                this.camera = ref;
+              }}
+              onBarCodeRead={this.onBarCodeRead}
+              style={{ flex: 0.5, width: '50%', borderWidth:1, justifyContent:'center', alignContent:'center' }}
+            >
+              <Text style={{ backgroundColor: 'white' }}>BARCODE SCANNER</Text>
+            </RNCamera>
+            ) : null  
+          }
+          <Button onPress={this.showCameraView}>
+            <Text>{textButtonCamera}</Text>
+          </Button>
+          
           {/* { this.state.isLoading 
                     ? 
                     (
