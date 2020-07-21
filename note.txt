@@ -1,3 +1,9 @@
 https://react-native-community.github.io/react-native-camera/docs/tests
 
 //https://github.com/laccadive-io/react-native-woocommerce-store/tree/master/src/store
+
+// redux example right way
+https://redux.js.org/advanced/example-reddit-api
+
+// rn load more
+https://github.com/brayoh/react-native-infinite-scroll-tutorial/blob/develop/src/App.js
