@@ -29,3 +29,13 @@ export {
     persistor,
 };
 
+
+// import { applyMiddleware, createStore } from 'redux';
+// import thunk from 'redux-thunk';
+// import RootReducers from '../reducers/RootReducers';
+// import logger from 'redux-logger';
+
+// const store = createStore(RootReducers, applyMiddleware(thunk, logger));
+// export {
+//     store,
+// };

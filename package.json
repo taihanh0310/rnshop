@@ -13,6 +13,8 @@
     "@react-native-community/async-storage": "^1.11.0",
     "@react-native-community/masked-view": "^0.1.10",
     "@react-native-community/toolbar-android": "0.1.0-rc.2",
+    "@react-navigation/bottom-tabs": "^5.7.2",
+    "@react-navigation/native": "^5.7.1",
     "babel-plugin-dotenv-import": "^2.1.0",
     "eslint-plugin-react-native": "^3.8.1",
     "native-base": "^2.13.12",

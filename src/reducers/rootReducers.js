@@ -1,11 +1,11 @@
 "use strict"
 import { combineReducers } from 'redux';
 
+import productsReducers from './productsReducers';
+
 //HERE COMBINE THE REDUCERS
 const appReducer = combineReducers({
-  products: {},
-  categories: {},
-  brands: {}
+  products: productsReducers,
 });
 
 const RootReducers = (state, action) => {

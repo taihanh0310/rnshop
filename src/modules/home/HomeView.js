@@ -5,11 +5,11 @@ import { connect } from 'react-redux'
 
 export class HomeView extends Component {
     constructor(props){
-
+        super(props);
     }
 
     componentDidMount(){
-
+        alert("home view")
     }
 
     // 01 fetch list categories - scroll ngang
@@ -27,7 +27,7 @@ export class HomeView extends Component {
 
     render() {
         return (
-            <View>
+            <View style={{backgroundColor:'red'}}>
                 <Text> HomeView </Text>
             </View>
         )
