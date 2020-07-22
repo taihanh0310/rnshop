@@ -94,7 +94,7 @@ export class ProductList extends Component {
                                             height: 58
                                         }}
                                         resizeMode='contain'
-                                        source={{ uri: item.images.length > 0 ? item.images[0].src : null }} />
+                                        source={{ uri: item.images.length > 0 ? item.images[0].src : 'https://annhienstore.com/wp-content/uploads/woocommerce-placeholder-300x300.png' }} />
                                 </View>
                             </View>
                         </View>
