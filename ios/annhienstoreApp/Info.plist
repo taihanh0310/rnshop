@@ -75,5 +75,7 @@
 		<string>Roboto.ttf</string>
 		<string>rubicon-icon-font.ttf</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Yeu cau camera de scan barcode</string>
 </dict>
 </plist>

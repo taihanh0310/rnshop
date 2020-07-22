@@ -28,7 +28,7 @@ export class HomeView extends Component {
     render() {
         return (
             <View>
-                <Text> prop </Text>
+                <Text> HomeView </Text>
             </View>
         )
     }

@@ -3,7 +3,7 @@ import { View, Text } from 'react-native'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
-export class BrandList extends Component {
+export class CategoryList extends Component {
     static propTypes = {
         prop: PropTypes
     }
@@ -11,7 +11,7 @@ export class BrandList extends Component {
     render() {
         return (
             <View>
-                <Text> Brand List </Text>
+                <Text> CategoryList </Text>
             </View>
         )
     }
@@ -25,4 +25,4 @@ const mapDispatchToProps = {
     
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(BrandList)
+export default connect(mapStateToProps, mapDispatchToProps)(CategoryList)
