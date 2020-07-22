@@ -17,12 +17,15 @@ const persistConfig = {
 // Middleware: Redux Persist Persisted Reducer
 const persistedReducer = persistReducer(persistConfig, RootReducers);// Redux: Store
 
-const store = createStore(
-    persistedReducer,
-    applyMiddleware(thunk, createLogger()), // Middleware: Redux Persist Persister
-);
+// const store = createStore(
+//     persistedReducer,
+//     applyMiddleware(thunk, createLogger()), // Middleware: Redux Persist Persister
+// );
 
-let persistor = persistStore(store);// Exports
+// let persistor = persistStore(store);// Exports
+let persistor = null
+
+const store = createStore(RootReducers, applyMiddleware(thunk, createLogger()));
 
 export {
     store,

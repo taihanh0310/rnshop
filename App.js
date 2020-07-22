@@ -24,29 +24,29 @@ import CategoryList from './src/modules/categories/CategoryList'
 const Tab = createBottomTabNavigator();
 
 class App extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props);
-}
+  }
 
   render() {
     return (
-      <SafeAreaView>
+      <SafeAreaView style={{ flex: 1 }}>
         <Provider store={store}>
-          <PersistGate loading={null} persistor={persistor}>
-          <NavigationContainer>
-            <Tab.Navigator
-              initialRouteName="Home"
-              tabBarOptions={{
-                activeTintColor: '#e91e63',
-              }}
-            >
-              <Tab.Screen name="Home" component={HomeView} />
-              <Tab.Screen name="Products" component={ProductList} />
-              <Tab.Screen name="Brands" component={BrandList} />
-              <Tab.Screen name="Categories" component={CategoryList} />
-            </Tab.Navigator>
-          </NavigationContainer>
-          </PersistGate>
+          {/* <PersistGate loading={null} persistor={persistor}> */}
+            <NavigationContainer>
+              <Tab.Navigator
+                initialRouteName="Products"
+                tabBarOptions={{
+                  activeTintColor: '#e91e63',
+                }}
+              >
+                <Tab.Screen name="Home" component={HomeView} />
+                <Tab.Screen name="Products" component={ProductList} />
+                <Tab.Screen name="Brands" component={BrandList} />
+                <Tab.Screen name="Categories" component={CategoryList} />
+              </Tab.Navigator>
+            </NavigationContainer>
+          {/* </PersistGate> */}
         </Provider>
       </SafeAreaView>
     )

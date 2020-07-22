@@ -35,15 +35,23 @@ export function clearListProduct() {
     }
 }
 
-export async function getListProductByCondition(condition) {
-    const url = `${Constants.URL.wc}products?per_page=100&consumer_key=${Constants.Keys.ConsumerKey}&consumer_secret=${Constants.Keys.ConsumerSecret}`
-    try {
-        let response = await fetch(url);
-        let data = await response.json();
-        return fetchListProduct(data);
-    } catch (error) {
-        console.error(error);
-        return clearListProduct();
+export function getListProductByCondition(condition) {
+    return function (dispatch) {
+        const url = `${Constants.URL.wc}products?per_page=16&consumer_key=${Constants.Keys.ConsumerKey}&consumer_secret=${Constants.Keys.ConsumerSecret}`
+        fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+            dispatch({
+                type: GET_LIST_PRODUCT,
+                payload: { products: data }
+            });
+        })
+        .catch((error) => {
+            dispatch({
+                type: CLEAR_PRODUCT_LIST,
+                payload: { products: [] }
+            });
+        });
     }
 }
 
