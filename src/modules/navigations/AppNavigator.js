@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { TouchableOpacity, Text } from 'react-native'
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -7,6 +8,8 @@ import { createStackNavigator } from '@react-navigation/stack'
 import HomeView from '../home/HomeView'
 import ProductList from '../products/ProductList'
 import ProductDetail from '../products/ProductDetail'
+import ProductCreate from '../products/ProductCreate'
+
 import BrandList from '../brands/BrandList'
 import CategoryList from '../categories/CategoryList'
 
@@ -18,11 +21,27 @@ function MainStackNavigator() {
     return (
         <Stack.Navigator
             initialRouteName='Products'
-            >
+        >
             <Stack.Screen
                 name='Products'
                 component={ProductList}
+                options={{
+                    headerRight: () => (
+                        <TouchableOpacity onPress={() => alert('create new screen')}>
+                            <Text>+</Text>
+                        </TouchableOpacity>
+                    ),
+                }}
             />
+
+            <Stack.Screen
+                name='ProductCreate'
+                component={ProductCreate}
+                options={({ route }) => ({
+                    title: route.params.item.name
+                })}
+            />
+
             <Stack.Screen
                 name='ProductDetail'
                 component={ProductDetail}
