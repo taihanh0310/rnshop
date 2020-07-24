@@ -16,10 +16,10 @@ const INITIAL_STATE = {
 export default function productsReducers(state = INITIAL_STATE, action) {
   switch (action.type) {
     case GET_LIST_PRODUCT: {
-      return Object.assign({}, state, {
-        isFetching: true,
-        products: action.payload.products,
-      })
+      return {
+        ...state,
+        products: [...state.products, action.payload.products]
+      }
     }
     case GET_PRODUCT_DETAIL: {
       return Object.assign({}, state, {

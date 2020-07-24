@@ -37,7 +37,7 @@ export function clearListProduct() {
 
 export function getListProductByCondition(condition) {
     return function (dispatch) {
-        const url = `${Constants.URL.wc}products?per_page=16&consumer_key=${Constants.Keys.ConsumerKey}&consumer_secret=${Constants.Keys.ConsumerSecret}`
+        const url = `${Constants.URL.wc}products?page=${condition.page}&per_page=4&search=${condition.search}&consumer_key=${Constants.Keys.ConsumerKey}&consumer_secret=${Constants.Keys.ConsumerSecret}`
         fetch(url)
         .then((response) => response.json())
         .then((data) => {
@@ -54,4 +54,5 @@ export function getListProductByCondition(condition) {
         });
     }
 }
+
 

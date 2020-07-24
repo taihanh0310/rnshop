@@ -7,7 +7,8 @@ import {
     ActivityIndicator,
     Text,
     Image,
-    TouchableOpacity
+    TouchableOpacity,
+    StyleSheet
 } from 'react-native'
 import {
     Container,
@@ -27,6 +28,8 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as productActions from '../../actions/ProductActions'
 
+const { width, height } = Dimensions.get('window')
+
 export class ProductList extends Component {
     constructor(props) {
         super(props);
@@ -44,58 +47,101 @@ export class ProductList extends Component {
         this._handleRefresh = this._handleRefresh.bind(this);
         this._handleLoadMore = this._handleLoadMore.bind(this);
         this.updateSearch = this.updateSearch.bind(this);
+        this.fetchListProduct = this.fetchListProduct.bind(this);
     }
 
-    async componentDidMount() {
-        await this.props.getListProductByCondition(null);
-        console.log(this.props.products)
+    componentDidMount() {
+        let condition = {
+            page: this.state.page,
+            search: this.state.search
+        }
+        this.fetchListProduct(condition);
+    }
+
+    fetchListProduct(condition) {
+
+        this.props.getListProductByCondition(condition)
+        this.setState({
+            //adding the new data with old one available in Data Source of the List
+            loading: false,
+            //updating the loading state to false
+        });
+
     }
 
     componentWillUnmount() {
     }
 
     _handleRefresh = () => {
-        alert("refresh")
+        // let condition = {
+        //     page: this.state.page,
+        //     search: ''
+        // }
+        // this.props.getListProductByCondition(condition);
     }
 
     _handleLoadMore = () => {
-        alert("load more")
+        this.setState({
+            loading: true
+        })
+        let page = this.state.page + 1
+
+        let condition = {
+            page: page,
+            search: this.state.search
+        }
+
+        alert(condition.page);
+
+        this.fetchListProduct(condition)
+        this.setState({
+            loading: false,
+            page: page
+        })
     }
 
     updateSearch = (search) => {
-
+        this.setState({ search });
+        let condition = {
+            page: 1,
+            search: this.state.search
+        }
+        if (search.length > 3) {
+            this.setState({
+                loading: true
+            })
+            this.fetchListProduct(condition)
+        }
     }
 
     _renderFooter = () => {
-        if (!this.state.loadingMore) return null;
-
         return (
-            <View
-                style={{
-                    position: 'relative',
-                    width: width,
-                    height: height,
-                    paddingVertical: 20,
-                    borderTopWidth: 1,
-                    marginTop: 10,
-                    marginBottom: 10,
-                    borderColor: colors.veryLightPink
-                }}
-            >
-                <ActivityIndicator animating size="large" />
+            //Footer View with Load More button
+            <View style={styles.footer}>
+                <TouchableOpacity
+                    activeOpacity={0.9}
+                    onPress={this._handleLoadMore}
+                    //On Click of button calling loadMoreData function to load more data
+                    style={styles.loadMoreBtn}>
+                    <Text style={styles.btnText}>Load More</Text>
+                    {this.state.fetching_from_server ? (
+                        <ActivityIndicator color="white" style={{ marginLeft: 8 }} />
+                    ) : null}
+                </TouchableOpacity>
             </View>
-        );
-    };
+        )
+    }
 
     render() {
         const { search } = this.state;
+        const { navigation } = this.props;
+        console.log(this.props.products.products)
         return (
             <Container>
                 <Header searchBar rounded>
                     <Item>
-                        <Icon name="ios-search" />
                         <Input
-                            placeholder="Search"
+                            placeholder="Tìm sản phẩm"
                             onChangeText={(text) => this.updateSearch(text)}
                             value={search}
                             autoCapitalize="none"
@@ -103,80 +149,140 @@ export class ProductList extends Component {
                             autoFocus={false}
                             disableFullscreenUI={false}
                         />
-                        <Icon name="ios-people" />
+                        <Icon name="ios-search" />
                     </Item>
                     <Button transparent>
-                        <Text>Search</Text>
+                        <Text>Camera</Text>
+                    </Button>
+                    <Button transparent>
+                        <Text>Tìm</Text>
                     </Button>
                 </Header>
-                <View style={{ paddingBottom: 20, height: Math.round(Dimensions.get('window').height) - 70, display: 'flex', justifyContent: 'center', alignContent: 'center' }}>
-                    <FlatList
-                        contentContainerStyle={{
-                            flex: 1,
-                            flexDirection: 'column',
-                            height: '100%',
-                            width: '100%',
-                            marginBottom: 30
-                        }}
-                        numColumns={2}
-                        data={this.props.products.products}
-                        renderItem={({ item }) => (
-                            <View
-                                style={{
-                                    marginTop: 25,
-                                    width: '50%'
+                <View style={{
+                    flex: 1,
+                    flexGrow: 1,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignContent: 'center'
+                }}>
+                    {
+                        (!this.state.loading) ?
+                            (<FlatList
+                                contentContainerStyle={{
+                                    flex: 1,
+                                    flexDirection: 'column',
+                                    padding: 20
                                 }}
-                            >
-                                <View>
-                                    <View>
-                                        <Image
-                                            style={{
-                                                width: 66,
-                                                height: 58
-                                            }}
-                                            resizeMode='contain'
-                                            source={{ uri: item.images.length > 0 ? item.images[0].src : 'https://annhienstore.com/wp-content/uploads/woocommerce-placeholder-300x300.png' }} />
-                                    </View>
-                                    <View>
-                                        <Text>{item.name}</Text>
-                                        <Text>{item.sku}</Text>
-                                        <Text>{item.price}</Text>
+                                numColumns={2}
+                                data={this.props.products.products}
+                                renderItem={({ item }) => (
+                                    <View 
+                                        key={item.id}
+                                        style={{
+                                            marginTop: 25,
+                                            width: Math.round(width / 2),
+                                            marginBottom: 25
+                                        }}
+                                    >
                                         <View>
-                                            {
-                                                item.categories.map((cat, indexCat) => {
-                                                    return (<TouchableOpacity onPress={() =>alert(cat.id)}>
-                                                        <Text>{cat.name}</Text>
-                                                    </TouchableOpacity>)
-                                                })
-                                            }
-                                        </View>
+                                            <View>
+                                                <Image
+                                                    style={{
+                                                        width: 66,
+                                                        height: 58
+                                                    }}
+                                                    resizeMode='contain'
+                                                    source={{ uri: item.images.length > 0 ? item.images[0].src : 'https://annhienstore.com/wp-content/uploads/woocommerce-placeholder-300x300.png' }} />
+                                            </View>
+                                            <View>
+                                                <Text>{item.name}</Text>
+                                                <Text>{item.sku}</Text>
+                                                <Text>{item.price}</Text>
+                                                <View>
+                                                    {
+                                                        item.categories.map((cat, indexCat) => {
+                                                            return (<TouchableOpacity onPress={() => alert(cat.id)}>
+                                                                <Text>{cat.name}</Text>
+                                                            </TouchableOpacity>)
+                                                        })
+                                                    }
+                                                </View>
 
-                                        <View>
-                                            {
-                                                item.brands.map((brand, indexBrand) => {
-                                                    return (<TouchableOpacity onPress={() =>alert(brand.id)}>
-                                                        <Text>{brand.name}</Text>
-                                                    </TouchableOpacity>)
-                                                })
-                                            }
+                                                <View>
+                                                    {
+                                                        item.brands.map((brand, indexBrand) => {
+                                                            return (<TouchableOpacity onPress={() => alert(brand.id)}>
+                                                                <Text>{brand.name}</Text>
+                                                            </TouchableOpacity>)
+                                                        })
+                                                    }
+                                                </View>
+                                                <TouchableOpacity
+                                                    onPress={() => navigation.navigate('ProductDetail', { item: item })}>
+                                                    <Text >Go to Detail Screen</Text>
+                                                </TouchableOpacity>
+                                            </View>
                                         </View>
                                     </View>
-                                </View>
-                            </View>
-                        )}
-                        keyExtractor={item => item.id.toString()}
-                        ListFooterComponent={this._renderFooter}
-                        onRefresh={this._handleRefresh}
-                        refreshing={this.state.refreshing}
-                        onEndReached={this._handleLoadMore}
-                        onEndReachedThreshold={0.5}
-                        initialNumToRender={10}
-                    />
+                                )}
+                                keyExtractor={item => item.id.toString()}
+                                ListFooterComponent={this._renderFooter}
+                                onRefresh={this._handleRefresh}
+                                refreshing={this.state.refreshing}
+                                // onEndReached={this._handleLoadMore}
+                                onEndReachedThreshold={0.5}
+                            />)
+                            :
+                            (<View>
+                                <Text style={{ alignSelf: 'center' }}>Loading beers</Text>
+                                <ActivityIndicator />
+                            </View>)
+                    }
+
                 </View>
             </Container>
         )
     }
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingTop: 30,
+    },
+    item: {
+        padding: 10,
+    },
+    separator: {
+        height: 0.5,
+        backgroundColor: 'rgba(0,0,0,0.4)',
+    },
+    text: {
+        fontSize: 15,
+        color: 'black',
+    },
+    footer: {
+        padding: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'row',
+    },
+    loadMoreBtn: {
+        padding: 10,
+        backgroundColor: '#800000',
+        borderRadius: 4,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    btnText: {
+        color: 'white',
+        fontSize: 15,
+        textAlign: 'center',
+    },
+});
 
 function mapStateToProps(state) {
     return {

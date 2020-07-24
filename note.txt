@@ -7,3 +7,7 @@ https://redux.js.org/advanced/example-reddit-api
 
 // rn load more
 https://github.com/brayoh/react-native-infinite-scroll-tutorial/blob/develop/src/App.js
+
+// react native navigation
+
+https://www.reactnativeschool.com/complex-navigation-example-with-react-navigation
