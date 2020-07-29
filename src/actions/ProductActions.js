@@ -36,23 +36,29 @@ export function clearListProduct() {
 }
 
 export function getListProductByCondition(condition) {
-    return function (dispatch) {
-        const url = `${Constants.URL.wc}products?page=${condition.page}&per_page=4&search=${condition.search}&consumer_key=${Constants.Keys.ConsumerKey}&consumer_secret=${Constants.Keys.ConsumerSecret}`
-        fetch(url)
-            .then((response) => response.json())
-            .then((data) => {
-                dispatch({
-                    type: GET_LIST_PRODUCT,
-                    payload: { products: data }
-                });
-            })
-            .catch((error) => {
-                dispatch({
-                    type: CLEAR_PRODUCT_LIST,
-                    payload: { products: [] }
-                });
-            });
-    }
+    return (dispatch, getState) => {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                const url = `${Constants.URL.wc}products?page=${condition.page}&per_page=20&search=${condition.search}&consumer_key=${Constants.Keys.ConsumerKey}&consumer_secret=${Constants.Keys.ConsumerSecret}`
+                fetch(url)
+                    .then((response) => response.json())
+                    .then((data) => {
+                        resolve();
+                        dispatch({
+                            type: GET_LIST_PRODUCT,
+                            payload: { products: data }
+                        });
+                    })
+                    .catch((error) => {
+                        console.log("error call data", error)
+                        dispatch({
+                            type: CLEAR_PRODUCT_LIST,
+                            payload: { products: [] }
+                        });
+                    });
+            }, 500);
+        });
+    };
 }
 
 /**
@@ -69,15 +75,15 @@ export function updateProductPrice(id, price) {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({regular_price:price})
+            body: JSON.stringify({ regular_price: price })
         })
-        .then((response) => response.json())
-        .then((data) => {
-            selectProductDetail(data)
-        })
-        .catch((error) => {
-            console.log(error)
-        });
+            .then((response) => response.json())
+            .then((data) => {
+                selectProductDetail(data)
+            })
+            .catch((error) => {
+                console.log(error)
+            });
     }
 }
 

@@ -18,7 +18,7 @@ export default function productsReducers(state = INITIAL_STATE, action) {
     case GET_LIST_PRODUCT: {
       return {
         ...state,
-        products: [...state.products, action.payload.products]
+        products: action.payload.products
       }
     }
     case GET_PRODUCT_DETAIL: {
@@ -27,9 +27,10 @@ export default function productsReducers(state = INITIAL_STATE, action) {
       })
     }
     case CLEAR_PRODUCT_LIST: {
-      return Object.assign({}, state, {
-        products: action.payload.products,
-      })
+      return {
+        ...state,
+        products: []
+      }
     }
   }
   return state

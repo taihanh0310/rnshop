@@ -48,6 +48,7 @@ export class ProductList extends Component {
         this._handleLoadMore = this._handleLoadMore.bind(this);
         this.updateSearch = this.updateSearch.bind(this);
         this.fetchListProduct = this.fetchListProduct.bind(this);
+        this.searchResult = this.searchResult.bind(this)
     }
 
     componentDidMount() {
@@ -91,8 +92,6 @@ export class ProductList extends Component {
             search: this.state.search
         }
 
-        alert(condition.page);
-
         this.fetchListProduct(condition)
         this.setState({
             loading: false,
@@ -102,40 +101,53 @@ export class ProductList extends Component {
 
     updateSearch = (search) => {
         this.setState({ search });
+    }
+
+    _renderFooter = (item) => {
+        console.log(item);
+        if (!this.state.loadingMore) return null;
+
+        return (
+            <View
+                key={'f-' + item.id.toString()}
+                style={{
+                    position: 'relative',
+                    width: width,
+                    height: height,
+                    paddingVertical: 20,
+                    borderTopWidth: 1,
+                    marginTop: 10,
+                    marginBottom: 10,
+                    borderColor: 'green'
+                }}
+            >
+                <ActivityIndicator animating size="large" />
+            </View>
+        );
+    }
+
+    searchResult = () => {
+        console.log("searcg resyktr", this.state.search)
+        this.setState({
+            loading: true,
+            search: this.state.search
+        })
+
         let condition = {
             page: 1,
             search: this.state.search
         }
-        if (search.length > 3) {
-            this.setState({
-                loading: true
-            })
-            this.fetchListProduct(condition)
-        }
-    }
 
-    _renderFooter = () => {
-        return (
-            //Footer View with Load More button
-            <View style={styles.footer}>
-                <TouchableOpacity
-                    activeOpacity={0.9}
-                    onPress={this._handleLoadMore}
-                    //On Click of button calling loadMoreData function to load more data
-                    style={styles.loadMoreBtn}>
-                    <Text style={styles.btnText}>Load More</Text>
-                    {this.state.fetching_from_server ? (
-                        <ActivityIndicator color="white" style={{ marginLeft: 8 }} />
-                    ) : null}
-                </TouchableOpacity>
-            </View>
-        )
+        this.fetchListProduct(condition)
+
+        this.setState({
+            loading: false,
+        })
     }
 
     render() {
         const { search } = this.state;
         const { navigation } = this.props;
-        console.log(this.props.products.products)
         return (
             <Container>
                 <Header searchBar rounded>
@@ -151,32 +163,31 @@ export class ProductList extends Component {
                         />
                         <Icon name="ios-search" />
                     </Item>
-                    <Button transparent>
-                        <Text>Camera</Text>
+                    <Button transparent onPress={this.searchResult}>
+                        <Text>Tìm</Text>
                     </Button>
                     <Button transparent>
-                        <Text>Tìm</Text>
+                        <Text>Camera</Text>
                     </Button>
                 </Header>
                 <View style={{
                     flex: 1,
                     flexGrow: 1,
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignContent: 'center'
                 }}>
                     {
                         (!this.state.loading) ?
                             (<FlatList
-                                contentContainerStyle={{
+                                style={{
                                     flex: 1,
-                                    flexDirection: 'column',
                                     padding: 20
                                 }}
+                                contentContainerStyle={{
+                                    flexDirection: 'column',
+                                }}
                                 numColumns={2}
-                                data={this.props.products.products}
+                                data={this.props.products.products.length > 0 ? this.props.products.products : []}
                                 renderItem={({ item }) => (
-                                    <View 
+                                    <View
                                         key={item.id}
                                         style={{
                                             marginTop: 25,
@@ -188,8 +199,13 @@ export class ProductList extends Component {
                                             <View>
                                                 <Image
                                                     style={{
-                                                        width: 66,
-                                                        height: 58
+                                                        width: 50,
+                                                        height: 50,
+                                                        overflow: 'hidden',
+                                                        alignItems: 'center',
+                                                        backgroundColor: 'orange',
+                                                        position: 'relative',
+                                                        margin: 10
                                                     }}
                                                     resizeMode='contain'
                                                     source={{ uri: item.images.length > 0 ? item.images[0].src : 'https://annhienstore.com/wp-content/uploads/woocommerce-placeholder-300x300.png' }} />
@@ -225,15 +241,17 @@ export class ProductList extends Component {
                                         </View>
                                     </View>
                                 )}
-                                keyExtractor={item => item.id.toString()}
+                                keyExtractor={(item, index) => {
+                                    return item.id;
+                                }}
                                 ListFooterComponent={this._renderFooter}
                                 onRefresh={this._handleRefresh}
                                 refreshing={this.state.refreshing}
-                                // onEndReached={this._handleLoadMore}
-                                onEndReachedThreshold={0.5}
+                                onEndReached={this._handleLoadMore}
+                                onEndReachedThreshold={0.1}
                             />)
                             :
-                            (<View>
+                            (<View key={"none"}>
                                 <Text style={{ alignSelf: 'center' }}>Loading beers</Text>
                                 <ActivityIndicator />
                             </View>)
