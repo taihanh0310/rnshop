@@ -74,11 +74,11 @@ export class ProductList extends Component {
     }
 
     _handleRefresh = () => {
-        // let condition = {
-        //     page: this.state.page,
-        //     search: ''
-        // }
-        // this.props.getListProductByCondition(condition);
+        let condition = {
+            page: this.state.page,
+            search: ''
+        }
+        this.props.getListProductByCondition(condition);
     }
 
     _handleLoadMore = () => {
@@ -100,11 +100,10 @@ export class ProductList extends Component {
     }
 
     updateSearch = (search) => {
-        this.setState({ search });
+        this.props.updateProductSearch(search)
     }
 
     _renderFooter = (item) => {
-        console.log(item);
         if (!this.state.loadingMore) return null;
 
         return (
@@ -127,15 +126,13 @@ export class ProductList extends Component {
     }
 
     searchResult = () => {
-        console.log("searcg resyktr", this.state.search)
         this.setState({
             loading: true,
-            search: this.state.search
         })
 
         let condition = {
             page: 1,
-            search: this.state.search
+            search: this.props.products.search
         }
 
         this.fetchListProduct(condition)
@@ -146,8 +143,7 @@ export class ProductList extends Component {
     }
 
     render() {
-        const { search } = this.state;
-        const { navigation } = this.props;
+        const { navigation, products } = this.props;
         return (
             <Container>
                 <Header searchBar rounded>
@@ -155,7 +151,7 @@ export class ProductList extends Component {
                         <Input
                             placeholder="Tìm sản phẩm"
                             onChangeText={(text) => this.updateSearch(text)}
-                            value={search}
+                            value={products.search}
                             autoCapitalize="none"
                             underlineColorAndroid="transparent"
                             autoFocus={false}
@@ -184,8 +180,8 @@ export class ProductList extends Component {
                                 contentContainerStyle={{
                                     flexDirection: 'column',
                                 }}
-                                numColumns={2}
-                                data={this.props.products.products.length > 0 ? this.props.products.products : []}
+                                numColumns={1}
+                                data={products.products.length > 0 ? products.products : []}
                                 renderItem={({ item }) => (
                                     <View
                                         key={item.id}

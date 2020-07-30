@@ -3,7 +3,8 @@
 import {
   GET_LIST_PRODUCT,
   GET_PRODUCT_DETAIL,
-  CLEAR_PRODUCT_LIST
+  CLEAR_PRODUCT_LIST,
+  UPDATE_PRODUCT_SEARCH
 } from '../constants/ProductType'
 
 const INITIAL_STATE = {
@@ -22,14 +23,21 @@ export default function productsReducers(state = INITIAL_STATE, action) {
       }
     }
     case GET_PRODUCT_DETAIL: {
-      return Object.assign({}, state, {
-        product: action.payload,
-      })
+      return {
+        ...state,
+        product: action.payload
+      }
     }
     case CLEAR_PRODUCT_LIST: {
       return {
         ...state,
         products: []
+      }
+    }
+    case UPDATE_PRODUCT_SEARCH: {
+      return {
+        ...state,
+        search: action.payload
       }
     }
   }

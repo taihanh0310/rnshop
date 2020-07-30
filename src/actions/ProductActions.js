@@ -3,7 +3,8 @@ import Constants from '../constants/Constants'
 import {
     GET_LIST_PRODUCT,
     GET_PRODUCT_DETAIL,
-    CLEAR_PRODUCT_LIST
+    CLEAR_PRODUCT_LIST,
+    UPDATE_PRODUCT_SEARCH
 } from '../constants/ProductType'
 
 
@@ -84,6 +85,19 @@ export function updateProductPrice(id, price) {
             .catch((error) => {
                 console.log(error)
             });
+    }
+}
+
+/**
+ * 
+ * @param {*} search 
+ */
+export function updateProductSearch(search){
+    return function (dispatch) {
+        dispatch({
+            type: UPDATE_PRODUCT_SEARCH,
+            payload: search
+        });
     }
 }
 
