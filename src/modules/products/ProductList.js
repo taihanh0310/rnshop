@@ -8,7 +8,9 @@ import {
     Text,
     Image,
     TouchableOpacity,
-    StyleSheet
+    StyleSheet,
+    Modal,
+    Vibration
 } from 'react-native'
 import {
     Container,
@@ -27,6 +29,7 @@ import {
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as productActions from '../../actions/ProductActions'
+import { RNCamera } from 'react-native-camera'
 
 const { width, height } = Dimensions.get('window')
 
@@ -42,6 +45,8 @@ export class ProductList extends Component {
             refreshing: false,
             error: null,
             search: '',
+            isModalVisible: false,
+            textButtonCamera: "Open Camera"
         };
         this._renderFooter = this._renderFooter.bind(this);
         this._handleRefresh = this._handleRefresh.bind(this);
@@ -49,6 +54,9 @@ export class ProductList extends Component {
         this.updateSearch = this.updateSearch.bind(this);
         this.fetchListProduct = this.fetchListProduct.bind(this);
         this.searchResult = this.searchResult.bind(this)
+        this.toggleModal = this.toggleModal.bind(this)
+        this.onBarCodeRead = this.onBarCodeRead.bind(this)
+        this.showCameraView = this.showCameraView.bind(this)
     }
 
     componentDidMount() {
@@ -142,6 +150,22 @@ export class ProductList extends Component {
         })
     }
 
+    toggleModal = () => {
+        this.setState({ isModalVisible: !this.state.isModalVisible });
+    }
+
+    onBarCodeRead = (e) => {
+        Alert.alert("Barcode value is" + e.data, "Barcode type is" + e.type);
+        Vibration.vibrate(500, false);
+    }
+
+    showCameraView = () => {
+        this.setState({ 
+          isCameraVisible: !this.state.isCameraVisible,
+          textButtonCamera: "Turn off Camera"
+        });
+      }
+
     render() {
         const { navigation, products } = this.props;
         return (
@@ -162,7 +186,7 @@ export class ProductList extends Component {
                     <Button transparent onPress={this.searchResult}>
                         <Text>Tìm</Text>
                     </Button>
-                    <Button transparent>
+                    <Button transparent onPress={this.toggleModal}>
                         <Text>Camera</Text>
                     </Button>
                 </Header>
@@ -170,6 +194,46 @@ export class ProductList extends Component {
                     flex: 1,
                     flexGrow: 1,
                 }}>
+                    <View style={styles.centeredView}>
+                        <Modal
+                            animationType="slide"
+                            transparent={true}
+                            visible={this.state.isModalVisible}
+                            onRequestClose={() => {
+                                Alert.alert("Modal has been closed.");
+                            }}
+                        >
+                            <View style={styles.centeredView}>
+                                <View style={styles.modalView}>
+                                    <Text style={styles.modalText}>Hello World!</Text>
+
+                                    <TouchableOpacity
+                                        style={{ ...styles.openButton, backgroundColor: "#2196F3" }}
+                                        onPress={this.toggleModal}
+                                    >
+                                        <Text style={styles.textStyle}>Hide Modal</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                {
+                                    (this.state.isModalVisible)
+                                        ?
+                                        (
+                                            <RNCamera
+                                                ref={ref => {
+                                                    this.camera = ref;
+                                                }}
+                                                onBarCodeRead={this.onBarCodeRead}
+                                                style={{ flex: 0.5, width: '50%', borderWidth: 1, justifyContent: 'center', alignContent: 'center' }}
+                                            >
+                                                <Text style={{ backgroundColor: 'white' }}>BARCODE SCANNER</Text>
+                                            </RNCamera>
+                                        ) : null
+                                }
+
+                            </View>
+                        </Modal>
+                    </View>
+
                     {
                         (!this.state.loading) ?
                             (<FlatList
@@ -296,6 +360,42 @@ const styles = StyleSheet.create({
         fontSize: 15,
         textAlign: 'center',
     },
+    centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 22
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 35,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5
+    },
+    openButton: {
+        backgroundColor: "#F194FF",
+        borderRadius: 20,
+        padding: 10,
+        elevation: 2
+    },
+    textStyle: {
+        color: "white",
+        fontWeight: "bold",
+        textAlign: "center"
+    },
+    modalText: {
+        marginBottom: 15,
+        textAlign: "center"
+    }
 });
 
 function mapStateToProps(state) {
