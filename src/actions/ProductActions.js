@@ -51,7 +51,6 @@ export function getListProductByCondition(condition) {
                         });
                     })
                     .catch((error) => {
-                        console.log("error call data", error)
                         dispatch({
                             type: CLEAR_PRODUCT_LIST,
                             payload: { products: [] }

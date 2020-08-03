@@ -57,6 +57,7 @@ export class ProductList extends Component {
         this.toggleModal = this.toggleModal.bind(this)
         this.onBarCodeRead = this.onBarCodeRead.bind(this)
         this.showCameraView = this.showCameraView.bind(this)
+        this.gotoProductDetail = this.gotoProductDetail.bind(this)
     }
 
     componentDidMount() {
@@ -64,7 +65,7 @@ export class ProductList extends Component {
             page: this.state.page,
             search: this.state.search
         }
-        this.fetchListProduct(condition);
+        this.fetchListProduct(condition)
     }
 
     fetchListProduct(condition) {
@@ -74,11 +75,20 @@ export class ProductList extends Component {
             //adding the new data with old one available in Data Source of the List
             loading: false,
             //updating the loading state to false
-        });
-
+        })
     }
 
     componentWillUnmount() {
+    }
+
+    /**
+     * 
+     */
+    gotoProductDetail = (detail) => {
+        const { navigate } = this.props.navigation
+
+        this.props.selectProductDetail(detail)
+        navigate('ProductDetail', { item: detail })
     }
 
     _handleRefresh = () => {
@@ -151,7 +161,7 @@ export class ProductList extends Component {
     }
 
     toggleModal = () => {
-        this.setState({ isModalVisible: !this.state.isModalVisible });
+        this.setState({ isModalVisible: !this.state.isModalVisible })
     }
 
     onBarCodeRead = (e) => {
@@ -160,14 +170,14 @@ export class ProductList extends Component {
     }
 
     showCameraView = () => {
-        this.setState({ 
-          isCameraVisible: !this.state.isCameraVisible,
-          textButtonCamera: "Turn off Camera"
+        this.setState({
+            isCameraVisible: !this.state.isCameraVisible,
+            textButtonCamera: "Turn off Camera"
         });
-      }
+    }
 
     render() {
-        const { navigation, products } = this.props;
+        const { products } = this.props;
         return (
             <Container>
                 <Header searchBar rounded>
@@ -194,45 +204,43 @@ export class ProductList extends Component {
                     flex: 1,
                     flexGrow: 1,
                 }}>
-                    <View style={styles.centeredView}>
-                        <Modal
-                            animationType="slide"
-                            transparent={true}
-                            visible={this.state.isModalVisible}
-                            onRequestClose={() => {
-                                Alert.alert("Modal has been closed.");
-                            }}
-                        >
-                            <View style={styles.centeredView}>
-                                <View style={styles.modalView}>
-                                    <Text style={styles.modalText}>Hello World!</Text>
+                    <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={this.state.isModalVisible}
+                        onRequestClose={() => {
+                            Alert.alert("Modal has been closed.");
+                        }}
+                    >
+                        <View style={styles.centeredView}>
+                            <View style={styles.modalView}>
+                                <Text style={styles.modalText}>Hello World!</Text>
 
-                                    <TouchableOpacity
-                                        style={{ ...styles.openButton, backgroundColor: "#2196F3" }}
-                                        onPress={this.toggleModal}
-                                    >
-                                        <Text style={styles.textStyle}>Hide Modal</Text>
-                                    </TouchableOpacity>
-                                </View>
-                                {
-                                    (this.state.isModalVisible)
-                                        ?
-                                        (
-                                            <RNCamera
-                                                ref={ref => {
-                                                    this.camera = ref;
-                                                }}
-                                                onBarCodeRead={this.onBarCodeRead}
-                                                style={{ flex: 0.5, width: '50%', borderWidth: 1, justifyContent: 'center', alignContent: 'center' }}
-                                            >
-                                                <Text style={{ backgroundColor: 'white' }}>BARCODE SCANNER</Text>
-                                            </RNCamera>
-                                        ) : null
-                                }
-
+                                <TouchableOpacity
+                                    style={{ ...styles.openButton, backgroundColor: "#2196F3" }}
+                                    onPress={this.toggleModal}
+                                >
+                                    <Text style={styles.textStyle}>Hide Modal</Text>
+                                </TouchableOpacity>
                             </View>
-                        </Modal>
-                    </View>
+                            {
+                                (this.state.isModalVisible)
+                                    ?
+                                    (
+                                        <RNCamera
+                                            ref={ref => {
+                                                this.camera = ref;
+                                            }}
+                                            onBarCodeRead={this.onBarCodeRead}
+                                            style={{ flex: 0.5, width: '50%', borderWidth: 1, justifyContent: 'center', alignContent: 'center' }}
+                                        >
+                                            <Text style={{ backgroundColor: 'white' }}>BARCODE SCANNER</Text>
+                                        </RNCamera>
+                                    ) : null
+                            }
+
+                        </View>
+                    </Modal>
 
                     {
                         (!this.state.loading) ?
@@ -251,21 +259,15 @@ export class ProductList extends Component {
                                         key={item.id}
                                         style={{
                                             marginTop: 25,
-                                            width: Math.round(width / 2),
+                                            width: width,
                                             marginBottom: 25
                                         }}
                                     >
                                         <View>
-                                            <View>
+                                            <View style={{ width: width }}>
                                                 <Image
                                                     style={{
-                                                        width: 50,
-                                                        height: 50,
-                                                        overflow: 'hidden',
-                                                        alignItems: 'center',
-                                                        backgroundColor: 'orange',
-                                                        position: 'relative',
-                                                        margin: 10
+                                                        flex: 1
                                                     }}
                                                     resizeMode='contain'
                                                     source={{ uri: item.images.length > 0 ? item.images[0].src : 'https://annhienstore.com/wp-content/uploads/woocommerce-placeholder-300x300.png' }} />
@@ -294,7 +296,7 @@ export class ProductList extends Component {
                                                     }
                                                 </View>
                                                 <TouchableOpacity
-                                                    onPress={() => navigation.navigate('ProductDetail', { item: item })}>
+                                                    onPress={() => this.gotoProductDetail(item)}>
                                                     <Text >Go to Detail Screen</Text>
                                                 </TouchableOpacity>
                                             </View>
