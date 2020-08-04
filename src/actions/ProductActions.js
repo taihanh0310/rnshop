@@ -66,32 +66,46 @@ export function getListProductByCondition(condition) {
  * @param {*} id 
  * @param {*} price 
  */
-export function updateProductPrice(id, price) {
-    return function (dispatch) {
-        const url = `${Constants.URL.wc}products/${id}?consumer_key=${Constants.Keys.ConsumerKey}&consumer_secret=${Constants.Keys.ConsumerSecret}`
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ regular_price: price })
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                selectProductDetail(data)
-            })
-            .catch((error) => {
-                console.log(error)
-            });
-    }
+export function updateProductPrice(id, price, name) {
+    return (dispatch, getState) => {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                const url = `${Constants.URL.wc}products/${id}?consumer_key=${Constants.Keys.ConsumerKey}&consumer_secret=${Constants.Keys.ConsumerSecret}`
+                fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        regular_price: price,
+                        name: name
+                    })
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        resolve();
+                        dispatch({
+                            type: GET_PRODUCT_DETAIL,
+                            payload: data
+                        });
+                    })
+                    .catch((error) => {
+                        dispatch({
+                            type: GET_PRODUCT_DETAIL,
+                            payload: {}
+                        });
+                    });
+            }, 500);
+        });
+    };
 }
 
 /**
  * 
  * @param {*} search 
  */
-export function updateProductSearch(search){
+export function updateProductSearch(search) {
     return function (dispatch) {
         dispatch({
             type: UPDATE_PRODUCT_SEARCH,
@@ -105,24 +119,35 @@ export function updateProductSearch(search){
  * @param {*} productForm 
  */
 export function createProduct(productForm) {
-    return function (dispatch) {
-        const url = `${Constants.URL.wc}products?consumer_key=${Constants.Keys.ConsumerKey}&consumer_secret=${Constants.Keys.ConsumerSecret}`
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(productForm)
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                selectProductDetail(data)
-            })
-            .catch((error) => {
-                console.log(error)
-            });
-    }
+    return (dispatch, getState) => {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                const url = `${Constants.URL.wc}products?consumer_key=${Constants.Keys.ConsumerKey}&consumer_secret=${Constants.Keys.ConsumerSecret}`
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(productForm)
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        resolve();
+                        dispatch({
+                            type: GET_PRODUCT_DETAIL,
+                            payload: data
+                        });
+                    })
+                    .catch((error) => {
+                        dispatch({
+                            type: GET_PRODUCT_DETAIL,
+                            payload: {}
+                        });
+                    });
+            }, 500);
+        });
+    };
 }
 
 
