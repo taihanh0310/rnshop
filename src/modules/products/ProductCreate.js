@@ -61,16 +61,16 @@ export class ProductCreate extends Component {
         return (
             <Container>
                 <Content>
-                    <Form>
                         <Item fixedLabel rounded>
-                            <Label>Username</Label>
+                            <Label>Tên sản phẩm</Label>
                             <Input />
                         </Item>
                         <Item fixedLabel last rounded>
-                            <Label>Password</Label>
+                            <Label>SKU</Label>
                             <Input />
                         </Item>
                         <Item picker rounded>
+                            <Label>Danh mục</Label>
                             <Picker
                                 mode="dropdown"
                                 iosIcon={<Icon name="arrow-down" />}
@@ -89,10 +89,19 @@ export class ProductCreate extends Component {
                             </Picker>
                         </Item>
 
+                        <Item fixedLabel rounded>
+                            <Label>Thương hiệu</Label>
+                            <Input />
+                        </Item>
+
+                        <Item fixedLabel rounded>
+                            <Label>Giá bán</Label>
+                            <Input />
+                        </Item>
+
                         <Button full rounded success>
                             <Text>Primary</Text>
                         </Button>
-                    </Form>
                 </Content>
             </Container>
         )

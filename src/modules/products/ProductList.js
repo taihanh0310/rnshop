@@ -5,7 +5,6 @@ import {
     ScrollView,
     FlatList,
     ActivityIndicator,
-    Text,
     Image,
     TouchableOpacity,
     StyleSheet,
@@ -23,7 +22,14 @@ import {
     Card,
     CardItem,
     Spinner,
-    Body
+    Body,
+    List,
+    ListItem,
+    Thumbnail,
+    Text,
+    Left,
+    Right,
+    Fab,
 } from 'native-base'
 
 import { connect } from 'react-redux'
@@ -46,7 +52,8 @@ export class ProductList extends Component {
             error: null,
             search: '',
             isModalVisible: false,
-            textButtonCamera: "Open Camera"
+            textButtonCamera: "Open Camera",
+            active: false
         };
         this._renderFooter = this._renderFooter.bind(this);
         this._handleRefresh = this._handleRefresh.bind(this);
@@ -59,6 +66,7 @@ export class ProductList extends Component {
         this.showCameraView = this.showCameraView.bind(this)
         this.gotoProductDetail = this.gotoProductDetail.bind(this)
         this.gotoCreateNewProduct = this.gotoCreateNewProduct.bind(this)
+        this.renderProductItem = this.renderProductItem.bind(this)
     }
 
     componentDidMount() {
@@ -151,6 +159,21 @@ export class ProductList extends Component {
         );
     }
 
+    renderProductItem = ({ item }) => {
+        return (<ListItem thumbnail onPress={() => this.gotoProductDetail(item)} key={item.id}>
+            <Left>
+                <Thumbnail square source={{ uri: item.images.length > 0 ? item.images[0].src : 'https://annhienstore.com/wp-content/uploads/woocommerce-placeholder-300x300.png' }} />
+            </Left>
+            <Body>
+                <Text numberOfLines={2}>{item.name}</Text>
+                <Text note numberOfLines={1}>{item.sku}</Text>
+            </Body>
+            <Right>
+                <Text numberOfLines={1}>{item.regular_price}</Text>
+            </Right>
+        </ListItem>)
+    }
+
     searchResult = () => {
         this.setState({
             loading: true,
@@ -204,19 +227,11 @@ export class ProductList extends Component {
                     <Button transparent onPress={this.searchResult}>
                         <Text>Tìm</Text>
                     </Button>
-                    <Button transparent onPress={this.toggleModal}>
-                        <Text>Camera</Text>
-                    </Button>
                 </Header>
                 <View style={{
                     flex: 1,
                     flexGrow: 1,
                 }}>
-                    <View>
-                        <Button onPress={() => this.gotoCreateNewProduct()}>
-                            <Text>Tao moi</Text>
-                        </Button>
-                    </View>
                     <Modal
                         animationType="slide"
                         transparent={true}
@@ -267,55 +282,7 @@ export class ProductList extends Component {
                                 }}
                                 numColumns={1}
                                 data={products.products.length > 0 ? products.products : []}
-                                renderItem={({ item }) => (
-                                    <View
-                                        key={item.id}
-                                        style={{
-                                            marginTop: 25,
-                                            width: width,
-                                            marginBottom: 25
-                                        }}
-                                    >
-                                        <View>
-                                            <View style={{ width: width }}>
-                                                <Image
-                                                    style={{
-                                                        flex: 1
-                                                    }}
-                                                    resizeMode='contain'
-                                                    source={{ uri: item.images.length > 0 ? item.images[0].src : 'https://annhienstore.com/wp-content/uploads/woocommerce-placeholder-300x300.png' }} />
-                                            </View>
-                                            <View>
-                                                <Text>{item.name}</Text>
-                                                <Text>{item.sku}</Text>
-                                                <Text>{item.price}</Text>
-                                                <View>
-                                                    {
-                                                        item.categories.map((cat, indexCat) => {
-                                                            return (<TouchableOpacity onPress={() => alert(cat.id)}>
-                                                                <Text>{cat.name}</Text>
-                                                            </TouchableOpacity>)
-                                                        })
-                                                    }
-                                                </View>
-
-                                                <View>
-                                                    {
-                                                        item.brands.map((brand, indexBrand) => {
-                                                            return (<TouchableOpacity onPress={() => alert(brand.id)}>
-                                                                <Text>{brand.name}</Text>
-                                                            </TouchableOpacity>)
-                                                        })
-                                                    }
-                                                </View>
-                                                <TouchableOpacity
-                                                    onPress={() => this.gotoProductDetail(item)}>
-                                                    <Text >Go to Detail Screen</Text>
-                                                </TouchableOpacity>
-                                            </View>
-                                        </View>
-                                    </View>
-                                )}
+                                renderItem={this.renderProductItem}
                                 keyExtractor={(item, index) => {
                                     return item.id;
                                 }}
@@ -326,12 +293,26 @@ export class ProductList extends Component {
                                 onEndReachedThreshold={0.1}
                             />)
                             :
-                            (<View key={"none"}>
-                                <Text style={{ alignSelf: 'center' }}>Loading beers</Text>
-                                <ActivityIndicator />
-                            </View>)
+                            (<Content>
+                                <Spinner color='green'/>
+                            </Content>)
                     }
 
+                    <Fab
+                        active={this.state.active}
+                        direction="up"
+                        containerStyle={{}}
+                        style={{ backgroundColor: '#5067FF' }}
+                        position="bottomRight"
+                        onPress={() => this.setState({ active: !this.state.active })}>
+                        <Icon name="add" />
+                        <Button style={{ backgroundColor: '#34A34F' }} onPress={this.toggleModal}>
+                            <Icon name="barcode" />
+                        </Button>
+                        <Button style={{ backgroundColor: '#3B5998' }} onPress={this.gotoCreateNewProduct}>
+                            <Icon name="create" />
+                        </Button>
+                    </Fab>
                 </View>
             </Container>
         )
