@@ -58,6 +58,7 @@ export class ProductList extends Component {
         this.onBarCodeRead = this.onBarCodeRead.bind(this)
         this.showCameraView = this.showCameraView.bind(this)
         this.gotoProductDetail = this.gotoProductDetail.bind(this)
+        this.gotoCreateNewProduct = this.gotoCreateNewProduct.bind(this)
     }
 
     componentDidMount() {
@@ -89,6 +90,13 @@ export class ProductList extends Component {
 
         this.props.selectProductDetail(detail)
         navigate('ProductDetail', { item: detail })
+    }
+
+    gotoCreateNewProduct = () => {
+        alert("create new form")
+
+        const { navigate } = this.props.navigation
+        navigate('ProductCreate')
     }
 
     _handleRefresh = () => {
@@ -204,6 +212,11 @@ export class ProductList extends Component {
                     flex: 1,
                     flexGrow: 1,
                 }}>
+                    <View>
+                        <Button onPress={() => this.gotoCreateNewProduct()}>
+                            <Text>Tao moi</Text>
+                        </Button>
+                    </View>
                     <Modal
                         animationType="slide"
                         transparent={true}

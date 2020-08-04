@@ -38,7 +38,7 @@ function MainStackNavigator() {
                 name='ProductCreate'
                 component={ProductCreate}
                 options={({ route }) => ({
-                    title: route.params.item.name
+                    title: "Tạo mới"
                 })}
             />
 
