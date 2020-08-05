@@ -1,5 +1,14 @@
 import React, { Component } from 'react'
-import { View } from 'react-native'
+import { Dimensions,
+    View,
+    ScrollView,
+    FlatList,
+    ActivityIndicator,
+    Image,
+    TouchableOpacity,
+    StyleSheet,
+    Modal,
+    Vibration } from 'react-native'
 import { Container, 
     Content, 
     Text, 
@@ -11,6 +20,12 @@ import { Container,
     Button, 
     Icon 
 } from "native-base"
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import * as productActions from '../../actions/ProductActions'
+import { getListCategoriesByCondition } from '../../actions/CategoryActions'
+
+const { width, height } = Dimensions.get('window')
 
 export class ProductCreate extends Component {
     constructor(props) {
@@ -23,11 +38,26 @@ export class ProductCreate extends Component {
         };
         this.handleSubmitForm = this.handleSubmitForm.bind(this)
         this.onValueChange2 = this.onValueChange2.bind(this)
+        this.fetchListCategories = this.fetchListCategories.bind(this)
     }
 
-    handleSubmitForm = (id, price, name) => {
+    componentDidMount(){
+        // fetch list categories
+        this.fetchListCategories()
+    }
+
+    handleSubmitForm = (price, name) => {
         alert(name)
-        this.props.updateProductPrice(id, price, name + " update")
+    }
+
+    fetchListCategories(){
+        let catCondition = {
+            page: 1,
+            per_page: 99,
+            search: ''
+        }
+
+        this.props.getListCategoriesByCondition(catCondition)
     }
 
     onchangeText = (object_key, text) => {
@@ -81,11 +111,17 @@ export class ProductCreate extends Component {
                                 selectedValue={this.state.selected2}
                                 onValueChange={(value) => this.onValueChange2(value)}
                             >
-                                <Picker.Item label="Wallet" value="key0" />
-                                <Picker.Item label="ATM Card" value="key1" />
-                                <Picker.Item label="Debit Card" value="key2" />
-                                <Picker.Item label="Credit Card" value="key3" />
-                                <Picker.Item label="Net Banking" value="key4" />
+                                {
+                                    (this.props.categories.collection.length > 0) 
+                                    ?
+                                    (
+                                        this.props.categories.collection.map(function(cat, i){
+                                            return (<Picker.Item label={cat.name} value={cat.id} key={"cat_"+i}/>)
+                                        })
+                                    )
+                                    :
+                                    null 
+                                }
                             </Picker>
                         </Item>
 
@@ -99,7 +135,7 @@ export class ProductCreate extends Component {
                             <Input />
                         </Item>
 
-                        <Button full rounded success>
+                        <Button full rounded success onPress={() => this.handleSubmitForm}>
                             <Text>Primary</Text>
                         </Button>
                 </Content>
@@ -108,4 +144,18 @@ export class ProductCreate extends Component {
     }
 }
 
-export default ProductCreate
+function mapStateToProps(state) {
+    return {
+        products: state.products,
+        categories: state.categories
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators({
+        ...productActions,
+        getListCategoriesByCondition
+    }, dispatch)
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ProductCreate)

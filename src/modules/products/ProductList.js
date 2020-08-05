@@ -162,7 +162,10 @@ export class ProductList extends Component {
     renderProductItem = ({ item }) => {
         return (<ListItem thumbnail onPress={() => this.gotoProductDetail(item)} key={item.id}>
             <Left>
-                <Thumbnail square source={{ uri: item.images.length > 0 ? item.images[0].src : 'https://annhienstore.com/wp-content/uploads/woocommerce-placeholder-300x300.png' }} />
+                <Thumbnail 
+                    resizeMode='contain' 
+                    square 
+                    source={{ uri: item.images.length > 0 ? item.images[0].src : 'https://annhienstore.com/wp-content/uploads/woocommerce-placeholder-300x300.png', cache: 'only-if-cached' }} />
             </Left>
             <Body>
                 <Text numberOfLines={2}>{item.name}</Text>
@@ -222,7 +225,7 @@ export class ProductList extends Component {
                             autoFocus={false}
                             disableFullscreenUI={false}
                         />
-                        <Icon name="ios-search" />
+                        <Icon name="search" />
                     </Item>
                     <Button transparent onPress={this.searchResult}>
                         <Text>Tìm</Text>

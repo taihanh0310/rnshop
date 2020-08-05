@@ -40,7 +40,13 @@ export function getListProductByCondition(condition) {
     return (dispatch, getState) => {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
-                const url = `${Constants.URL.wc}products?page=${condition.page}&per_page=20&search=${condition.search}&consumer_key=${Constants.Keys.ConsumerKey}&consumer_secret=${Constants.Keys.ConsumerSecret}`
+                let url = null;
+                if(condition.search != ''){
+                    url = `${Constants.URL.wc}products?page=${condition.page}&per_page=20&search=${condition.search}&consumer_key=${Constants.Keys.ConsumerKey}&consumer_secret=${Constants.Keys.ConsumerSecret}`
+                }
+                else{
+                    url = `${Constants.URL.wc}products?page=${condition.page}&per_page=20&consumer_key=${Constants.Keys.ConsumerKey}&consumer_secret=${Constants.Keys.ConsumerSecret}`
+                }
                 fetch(url)
                     .then((response) => response.json())
                     .then((data) => {
@@ -140,6 +146,7 @@ export function createProduct(productForm) {
                         });
                     })
                     .catch((error) => {
+                        console.log(error)
                         dispatch({
                             type: GET_PRODUCT_DETAIL,
                             payload: {}
