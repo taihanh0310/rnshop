@@ -9,6 +9,7 @@ import HomeView from '../home/HomeView'
 import ProductList from '../products/ProductList'
 import ProductDetail from '../products/ProductDetail'
 import ProductCreate from '../products/ProductCreate'
+import ProductScanRNCamera from '../products/ProductScanRNCamera'
 
 import BrandList from '../brands/BrandList'
 import CategoryList from '../categories/CategoryList'
@@ -47,6 +48,14 @@ function MainStackNavigator() {
                 component={ProductDetail}
                 options={({ route }) => ({
                     title: route.params.item.name
+                })}
+            />
+
+            <Stack.Screen
+                name='ProductScanRNCamera'
+                component={ProductScanRNCamera}
+                options={({ route }) => ({
+                    title: "Scan Barcode"
                 })}
             />
         </Stack.Navigator>

@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import { Dimensions,
+import {
+    Dimensions,
     View,
     ScrollView,
     FlatList,
@@ -8,22 +9,25 @@ import { Dimensions,
     TouchableOpacity,
     StyleSheet,
     Modal,
-    Vibration } from 'react-native'
-import { Container, 
-    Content, 
-    Text, 
-    Form, 
-    Item, 
-    Input, 
-    Label, 
-    Picker, 
-    Button, 
-    Icon 
+    Vibration
+} from 'react-native'
+import {
+    Container,
+    Content,
+    Text,
+    Form,
+    Item,
+    Input,
+    Label,
+    Picker,
+    Button,
+    Icon
 } from "native-base"
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as productActions from '../../actions/ProductActions'
 import { getListCategoriesByCondition } from '../../actions/CategoryActions'
+import commonStyles from '../../common/styles/commonStyles'
 
 const { width, height } = Dimensions.get('window')
 
@@ -33,24 +37,42 @@ export class ProductCreate extends Component {
         this.state = {
             name: "",
             regular_price: 0,
+            type: 'simple',
             sku: "",
+            description: '',
+            short_description: '',
             selected2: undefined
         };
         this.handleSubmitForm = this.handleSubmitForm.bind(this)
         this.onValueChange2 = this.onValueChange2.bind(this)
         this.fetchListCategories = this.fetchListCategories.bind(this)
+        this.openCamera = this.openCamera.bind(this)
     }
 
-    componentDidMount(){
+    componentDidMount() {
         // fetch list categories
         this.fetchListCategories()
     }
 
-    handleSubmitForm = (price, name) => {
-        alert(name)
+    handleSubmitForm = () => {
+        let form = {
+            name: this.state.name,
+            type: 'simple',
+            regular_price: this.state.regular_price,
+            description: this.state.description,
+            short_description: this.state.short_description,
+            categories: [{ id: this.state.selected2 }],
+            sku: this.state.sku
+        }
+
+        this.props.createProduct(form)
     }
 
-    fetchListCategories(){
+    openCamera = () => {
+        alert("open camera")
+    }
+
+    fetchListCategories() {
         let catCondition = {
             page: 1,
             per_page: 99,
@@ -72,13 +94,24 @@ export class ProductCreate extends Component {
                     regular_price: text
                 })
                 break;
-            default:
+            case 'short_description': {
+                this.setState({
+                    short_description: text
+                })
+                break;
+            }
+            case 'sku': {
                 this.setState({
                     sku: text
                 })
                 break;
+            }
+            default:
+                this.setState({
+                    description: text
+                })
+                break;
         }
-        console.log(text)
     }
 
     onValueChange2(value) {
@@ -91,58 +124,100 @@ export class ProductCreate extends Component {
         return (
             <Container>
                 <Content>
-                        <Item fixedLabel rounded>
-                            <Label>Tên sản phẩm</Label>
-                            <Input />
-                        </Item>
-                        <Item fixedLabel last rounded>
-                            <Label>SKU</Label>
-                            <Input />
-                        </Item>
-                        <Item picker rounded>
-                            <Label>Danh mục</Label>
-                            <Picker
-                                mode="dropdown"
-                                iosIcon={<Icon name="arrow-down" />}
-                                style={{ width: undefined }}
-                                placeholder="Select your SIM"
-                                placeholderStyle={{ color: "#bfc6ea" }}
-                                placeholderIconColor="#007aff"
-                                selectedValue={this.state.selected2}
-                                onValueChange={(value) => this.onValueChange2(value)}
-                            >
-                                {
-                                    (this.props.categories.collection.length > 0) 
-                                    ?
-                                    (
-                                        this.props.categories.collection.map(function(cat, i){
-                                            return (<Picker.Item label={cat.name} value={cat.id} key={"cat_"+i}/>)
-                                        })
-                                    )
-                                    :
-                                    null 
-                                }
-                            </Picker>
-                        </Item>
+                    <Form style={[commonStyles.defaultMargin]}>
+                        <ScrollView contentContainerStyle={{ height: height - 260 }}>
+                            <Item picker last rounded style={[commonStyles.defaultMargin]}>
+                                <Label>Danh mục</Label>
+                                <Picker
+                                    mode="dropdown"
+                                    iosIcon={<Icon name="arrow-down" />}
+                                    style={{ width: undefined }}
+                                    placeholder="Chọn danh mục"
+                                    placeholderStyle={{ color: "#bfc6ea" }}
+                                    placeholderIconColor="#007aff"
+                                    selectedValue={this.state.selected2}
+                                    onValueChange={(value) => this.onValueChange2(value)}
+                                >
+                                    {
+                                        (this.props.categories.collection.length > 0)
+                                            ?
+                                            (
+                                                this.props.categories.collection.map(function (cat, i) {
+                                                    return (<Picker.Item label={cat.name} value={cat.id} key={"cat_" + i} />)
+                                                })
+                                            )
+                                            :
+                                            null
+                                    }
+                                </Picker>
+                            </Item>
 
-                        <Item fixedLabel rounded>
-                            <Label>Thương hiệu</Label>
-                            <Input />
-                        </Item>
+                            <Item fixedLabel last rounded style={[commonStyles.defaultMargin]}>
+                                <Label>Tên sản phẩm</Label>
+                                <Input
+                                    clearButtonMode='while-editing'
+                                    onChangeText={(text) => this.onchangeText("name", text)} />
+                            </Item>
+                            <Item fixedLabel last rounded style={[commonStyles.defaultMargin]}>
+                                <Label>SKU</Label>
+                                <Input
+                                    clearButtonMode='while-editing'
+                                    keyboardType='number-pad'
+                                    onChangeText={(text) => this.onchangeText("sku", text)}
+                                />
+                            </Item>
 
-                        <Item fixedLabel rounded>
-                            <Label>Giá bán</Label>
-                            <Input />
-                        </Item>
+                            <Button
+                                full
+                                rounded
+                                onPress={() => this.openCamera()}
+                                style={[commonStyles.defaultMargin]}>
+                                <Text>Scan Barcode</Text>
+                            </Button>
 
-                        <Button full rounded success onPress={() => this.handleSubmitForm}>
-                            <Text>Primary</Text>
+                            <Item fixedLabel last rounded style={[commonStyles.defaultMargin]}>
+                                <Label>Giá bán</Label>
+                                <Input
+                                    clearButtonMode='while-editing'
+                                    keyboardType='number-pad'
+                                    onChangeText={(text) => this.onchangeText("regular_price", text)}
+                                />
+                            </Item>
+
+                            <Item fixedLabel last rounded style={[commonStyles.defaultMargin]}>
+                                <Label>DG ngắn</Label>
+                                <Input
+                                    clearButtonMode='while-editing'
+                                    onChangeText={(text) => this.onchangeText("short_description", text)}
+                                    multiline={true}
+                                />
+                            </Item>
+
+                            <Item fixedLabel last rounded style={[commonStyles.defaultMargin]}>
+                                <Label>Diễn giải</Label>
+                                <Input
+                                    clearButtonMode='while-editing'
+                                    onChangeText={(text) => this.onchangeText("description", text)}
+                                    multiline={true}
+                                />
+                            </Item>
+                        </ScrollView>
+                        <Button
+                            full
+                            rounded
+                            success
+                            onPress={() => this.handleSubmitForm()}
+                            style={[commonStyles.defaultMargin]}>
+                            <Text>Tạo mới</Text>
                         </Button>
+                    </Form>
                 </Content>
             </Container>
         )
     }
 }
+
+
 
 function mapStateToProps(state) {
     return {

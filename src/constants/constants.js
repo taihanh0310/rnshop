@@ -9,7 +9,7 @@ const Constants = {
     },
     auth: {
         username: "sysadmin",
-        password: ""
+        password: "LWJxO*N*@!&AkY2a!d"
     }
 }
 

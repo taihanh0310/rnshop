@@ -66,6 +66,7 @@ export class ProductList extends Component {
         this.showCameraView = this.showCameraView.bind(this)
         this.gotoProductDetail = this.gotoProductDetail.bind(this)
         this.gotoCreateNewProduct = this.gotoCreateNewProduct.bind(this)
+        this.gotoProductBarcode = this.gotoProductBarcode.bind(this)
         this.renderProductItem = this.renderProductItem.bind(this)
     }
 
@@ -101,10 +102,13 @@ export class ProductList extends Component {
     }
 
     gotoCreateNewProduct = () => {
-        alert("create new form")
-
         const { navigate } = this.props.navigation
         navigate('ProductCreate')
+    }
+
+    gotoProductBarcode = () => {
+        const { navigate } = this.props.navigation
+        navigate('ProductScanRNCamera')
     }
 
     _handleRefresh = () => {
@@ -309,7 +313,10 @@ export class ProductList extends Component {
                         position="bottomRight"
                         onPress={() => this.setState({ active: !this.state.active })}>
                         <Icon name="add" />
-                        <Button style={{ backgroundColor: '#34A34F' }} onPress={this.toggleModal}>
+                        {/* <Button style={{ backgroundColor: '#34A34F' }} onPress={this.toggleModal}>
+                            <Icon name="barcode" />
+                        </Button> */}
+                        <Button style={{ backgroundColor: '#34A34F' }} onPress={this.gotoProductBarcode}>
                             <Icon name="barcode" />
                         </Button>
                         <Button style={{ backgroundColor: '#3B5998' }} onPress={this.gotoCreateNewProduct}>

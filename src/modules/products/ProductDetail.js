@@ -46,6 +46,20 @@ export class ProductDetail extends Component {
         return null
     }
 
+    fetchListCategories() {
+        let catCondition = {
+            page: 1,
+            per_page: 99,
+            search: ''
+        }
+
+        this.props.getListCategoriesByCondition(catCondition)
+    }
+
+    openCamera = () => {
+        alert("open camera")
+    }
+
     onchangeText = (object_key, text) => {
         switch (object_key) {
             case "name":
@@ -58,53 +72,125 @@ export class ProductDetail extends Component {
                     regular_price: text
                 })
                 break;
-            default:
+            case 'short_description': {
+                this.setState({
+                    short_description: text
+                })
+                break;
+            }
+            case 'sku': {
                 this.setState({
                     sku: text
                 })
                 break;
+            }
+            default:
+                this.setState({
+                    description: text
+                })
+                break;
         }
-        console.log(text)
+    }
+
+    onValueChange2(value) {
+        this.setState({
+            selected2: value
+        });
     }
 
     renderProductDetail(productDetail) {
         return (
-            <View>
-                <View>
-                    <Image source={{ uri: 'https://annhienstore.com/wp-content/uploads/woocommerce-placeholder-300x300.png' }} />
-                </View>
-                <View>
-                    <View>
-                        <View>
-                            <TextInput 
-                                value={this.state.name} 
-                                style={{ height: 40, borderColor: 'gray', borderWidth: 1 }} 
-                                onChangeText={(text) => this.onchangeText("name", text)}
+            <Container>
+                <Content>
+                    <Form style={[commonStyles.defaultMargin]}>
+                        <ScrollView contentContainerStyle={{ height: height - 260 }}>
+                            <Item picker last rounded style={[commonStyles.defaultMargin]}>
+                                <Label>Danh mục</Label>
+                                <Picker
+                                    mode="dropdown"
+                                    iosIcon={<Icon name="arrow-down" />}
+                                    style={{ width: undefined }}
+                                    placeholder="Chọn danh mục"
+                                    placeholderStyle={{ color: "#bfc6ea" }}
+                                    placeholderIconColor="#007aff"
+                                    selectedValue={this.state.selected2}
+                                    onValueChange={(value) => this.onValueChange2(value)}
+                                >
+                                    {
+                                        (this.props.categories.collection.length > 0)
+                                            ?
+                                            (
+                                                this.props.categories.collection.map(function (cat, i) {
+                                                    return (<Picker.Item label={cat.name} value={cat.id} key={"cat_" + i} />)
+                                                })
+                                            )
+                                            :
+                                            null
+                                    }
+                                </Picker>
+                            </Item>
+
+                            <Item fixedLabel last rounded style={[commonStyles.defaultMargin]}>
+                                <Label>Tên sản phẩm</Label>
+                                <Input
+                                    clearButtonMode='while-editing'
+                                    onChangeText={(text) => this.onchangeText("name", text)} />
+                            </Item>
+                            <Item fixedLabel last rounded style={[commonStyles.defaultMargin]}>
+                                <Label>SKU</Label>
+                                <Input
+                                    clearButtonMode='while-editing'
+                                    keyboardType='number-pad'
+                                    onChangeText={(text) => this.onchangeText("sku", text)}
                                 />
-                        </View>
-                        <View>
-                            <TextInput value={this.state.sku} style={{ height: 40, borderColor: 'gray', borderWidth: 1 }} onChangeText={(text) => this.onchangeText("sku", text)}/>
-                        </View>
-                        <View>
-                            <TextInput value={this.state.regular_price} style={{ height: 40, borderColor: 'gray', borderWidth: 1 }} onChangeText={(text) => this.onchangeText("regular_price", text)}/>
-                        </View>
-                        <View>
-                            <View>
-                                <TouchableOpacity>
-                                    <Text>
-                                        Quay lai
-                                </Text>
-                                </TouchableOpacity>
-                            </View>
-                            <View>
-                                <TouchableOpacity onPress={() => this.handleSubmitForm(productDetail.id, this.state.regular_price, this.state.name)}>
-                                    <Text>Cap nhat</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-                </View>
-            </View>
+                            </Item>
+
+                            <Button
+                                full
+                                rounded
+                                onPress={() => this.openCamera()}
+                                style={[commonStyles.defaultMargin]}>
+                                <Text>Scan Barcode</Text>
+                            </Button>
+
+                            <Item fixedLabel last rounded style={[commonStyles.defaultMargin]}>
+                                <Label>Giá bán</Label>
+                                <Input
+                                    clearButtonMode='while-editing'
+                                    keyboardType='number-pad'
+                                    onChangeText={(text) => this.onchangeText("regular_price", text)}
+                                />
+                            </Item>
+
+                            <Item fixedLabel last rounded style={[commonStyles.defaultMargin]}>
+                                <Label>DG ngắn</Label>
+                                <Input
+                                    clearButtonMode='while-editing'
+                                    onChangeText={(text) => this.onchangeText("short_description", text)}
+                                    multiline={true}
+                                />
+                            </Item>
+
+                            <Item fixedLabel last rounded style={[commonStyles.defaultMargin]}>
+                                <Label>Diễn giải</Label>
+                                <Input
+                                    clearButtonMode='while-editing'
+                                    onChangeText={(text) => this.onchangeText("description", text)}
+                                    multiline={true}
+                                />
+                            </Item>
+                        </ScrollView>
+                        <Button
+                            full
+                            rounded
+                            success
+                            onPress={() => this.handleSubmitForm()}
+                            style={[commonStyles.defaultMargin]}>
+                            <Text>Tạo mới</Text>
+                        </Button>
+                    </Form>
+                </Content>
+            </Container>
         )
     }
 

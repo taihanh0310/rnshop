@@ -1,4 +1,5 @@
 import Constants from '../constants/Constants'
+import base64 from 'react-native-base64'
 
 import {
     GET_LIST_BRAND,
@@ -16,11 +17,13 @@ export function getListBrandByCondition(condition) {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
                 let url = `${Constants.URL.wc}brands`;
+                let auth = 'Basic ' + base64.encode(Constants.auth.username + ':' + Constants.auth.password)
+
                 dispatch(updateTheLoadingStatus(true))
                 fetch(url, {
                     method: 'GET',
                     headers: {
-                        'Authorization': 'Basic' + btoa(`${Constants.auth.username}:${Constants.auth.password}`),
+                        'Authorization': auth,
                         'Accept': 'application/json',
                         'Content-Type': 'application/x-www-form-urlencoded'
                     }})
