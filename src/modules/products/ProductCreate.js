@@ -21,7 +21,8 @@ import {
     Label,
     Picker,
     Button,
-    Icon
+    Icon, 
+    Spinner
 } from "native-base"
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -41,7 +42,8 @@ export class ProductCreate extends Component {
             sku: "",
             description: '',
             short_description: '',
-            selected2: undefined
+            selected2: undefined,
+            loading: false
         };
         this.handleSubmitForm = this.handleSubmitForm.bind(this)
         this.onValueChange2 = this.onValueChange2.bind(this)
@@ -55,17 +57,28 @@ export class ProductCreate extends Component {
     }
 
     handleSubmitForm = () => {
-        let form = {
-            name: this.state.name,
-            type: 'simple',
-            regular_price: this.state.regular_price,
-            description: this.state.description,
-            short_description: this.state.short_description,
-            categories: [{ id: this.state.selected2 }],
-            sku: this.state.sku
-        }
+        this.setState({
+            loading: true
+        })
+        setTimeout(() => {
+            let form = {
+                name: this.state.name,
+                type: 'simple',
+                regular_price: this.state.regular_price,
+                description: this.state.description,
+                short_description: this.state.short_description,
+                categories: [{ id: this.state.selected2 }],
+                sku: this.state.sku
+            }
 
-        this.props.createProduct(form)
+            this.props.createProduct(form)
+            this.setState({
+                loading: false
+            })
+
+            alert("tao moi thanh cong")
+        }, 4000);
+
     }
 
     openCamera = () => {
@@ -208,7 +221,14 @@ export class ProductCreate extends Component {
                             success
                             onPress={() => this.handleSubmitForm()}
                             style={[commonStyles.defaultMargin]}>
-                            <Text>Tạo mới</Text>
+
+                            {
+                                (this.state.loading)
+                                    ?
+                                    (<Spinner />)
+                                    :
+                                    (<Text>Tạo mới</Text>)
+                            }
                         </Button>
                     </Form>
                 </Content>

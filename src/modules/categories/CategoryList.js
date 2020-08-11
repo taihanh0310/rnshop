@@ -57,14 +57,16 @@ export class CategoryList extends Component {
 
     renderItem = ({ item }) => {
         return (
-            <ListItem key={'cat-' + item.id}>
+            <ListItem thumbnail key={'cat-' + item.id}>
                 <Left>
                     <Thumbnail
                         resizeMode='contain'
                         source={{ uri: item.image != null ? item.image.src : 'https://annhienstore.com/wp-content/uploads/woocommerce-placeholder-300x300.png', cache: 'only-if-cached' }}
                     />
                 </Left>
-                <Body><Text numberOfLines={2}>{item.name}</Text></Body>
+                <Body>
+                    <Text numberOfLines={2}>{item.name}</Text>
+                </Body>
                 <Right>
                     <Text>{item.count}</Text>
                 </Right>

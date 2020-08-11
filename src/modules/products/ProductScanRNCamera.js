@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { Text, View, Button } from 'react-native';
 import { RNCamera } from 'react-native-camera';
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import * as productActions from '../../actions/ProductActions'
 
 class ProductScanRNCamera extends Component {
 
@@ -25,6 +28,8 @@ class ProductScanRNCamera extends Component {
                 this.barcodeCodes.push(scanResult.data);
                 console.warn('onBarCodeRead call');
             }
+
+            this.props.updateProductSearch(scanResult.data)
         }
         return;
     }
@@ -129,4 +134,17 @@ const styles = {
     }
 };
 
-export default ProductScanRNCamera;
+
+function mapStateToProps(state) {
+    return {
+        products: state.products,
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators({
+        ...productActions,
+    }, dispatch)
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ProductScanRNCamera)

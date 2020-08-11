@@ -107,6 +107,39 @@ export function updateProductPrice(id, price, name) {
     };
 }
 
+export function updateProduct(id, form){
+    return (dispatch, getState) => {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                const url = `${Constants.URL.wc}products/${id}?consumer_key=${Constants.Keys.ConsumerKey}&consumer_secret=${Constants.Keys.ConsumerSecret}`
+                fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(form)
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        resolve();
+                        dispatch({
+                            type: GET_PRODUCT_DETAIL,
+                            payload: data
+                        });
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                        dispatch({
+                            type: GET_PRODUCT_DETAIL,
+                            payload: {}
+                        });
+                    });
+            }, 500);
+        });
+    };
+}
+
 /**
  * 
  * @param {*} search 

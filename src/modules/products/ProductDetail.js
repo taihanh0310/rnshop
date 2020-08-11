@@ -5,7 +5,8 @@ import {
     Image,
     TouchableOpacity,
     StyleSheet,
-    TextInput
+    TextInput,
+    ScrollView
 }
     from 'react-native'
 import {
@@ -18,11 +19,16 @@ import {
     Label,
     Picker,
     Button,
-    Icon
+    Icon,
+    Toast,
+    Spinner
 } from "native-base"
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as productActions from '../../actions/ProductActions'
+import commonStyles from '../../common/styles/commonStyles'
+
+import { getListCategoriesByCondition } from '../../actions/CategoryActions'
 
 const { width, height } = Dimensions.get('window')
 
@@ -30,9 +36,13 @@ export class ProductDetail extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            id: 0,
             name: "",
             regular_price: 0,
-            sku: ""
+            sku: "",
+            short_description: "",
+            description: "",
+            loading: false
         };
         this.handleSubmitForm = this.handleSubmitForm.bind(this);
         this.renderEmpty = this.renderEmpty.bind(this)
@@ -42,15 +52,34 @@ export class ProductDetail extends Component {
     componentDidMount() {
         const { item } = this.props.route.params
         this.setState({
+            id: item.id,
             name: item.name,
             regular_price: item.regular_price,
-            sku: item.sku
+            sku: item.sku,
+            short_description: item.short_description,
+            description: item.description
         })
     }
 
-    handleSubmitForm = (id, price, name) => {
-        alert(name)
-        this.props.updateProductPrice(id, price, name + " update")
+    handleSubmitForm = () => {
+        this.setState({
+            loading: true
+        })
+        setTimeout(() => {
+            let form = {
+                name: this.state.name,
+                regular_price: this.state.regular_price,
+                description: this.state.description,
+                short_description: this.state.short_description,
+                sku: this.state.sku
+            }
+    
+            this.props.updateProduct(this.state.id, form)
+            this.setState({
+                loading: false
+            })
+            alert("update thanh cong")
+        }, 4000);
     }
 
     renderEmpty() {
@@ -109,7 +138,7 @@ export class ProductDetail extends Component {
         });
     }
 
-    renderProductDetail(productDetail) {
+    renderProductDetail() {
         return (
             <Container>
                 <Content>
@@ -145,12 +174,14 @@ export class ProductDetail extends Component {
                                 <Label>Tên sản phẩm</Label>
                                 <Input
                                     clearButtonMode='while-editing'
+                                    value={this.state.name}
                                     onChangeText={(text) => this.onchangeText("name", text)} />
                             </Item>
                             <Item fixedLabel last rounded style={[commonStyles.defaultMargin]}>
                                 <Label>SKU</Label>
                                 <Input
                                     clearButtonMode='while-editing'
+                                    value={this.state.sku}
                                     keyboardType='number-pad'
                                     onChangeText={(text) => this.onchangeText("sku", text)}
                                 />
@@ -169,6 +200,7 @@ export class ProductDetail extends Component {
                                 <Input
                                     clearButtonMode='while-editing'
                                     keyboardType='number-pad'
+                                    value={this.state.regular_price}
                                     onChangeText={(text) => this.onchangeText("regular_price", text)}
                                 />
                             </Item>
@@ -177,6 +209,7 @@ export class ProductDetail extends Component {
                                 <Label>DG ngắn</Label>
                                 <Input
                                     clearButtonMode='while-editing'
+                                    value={this.state.short_description}
                                     onChangeText={(text) => this.onchangeText("short_description", text)}
                                     multiline={true}
                                 />
@@ -186,18 +219,26 @@ export class ProductDetail extends Component {
                                 <Label>Diễn giải</Label>
                                 <Input
                                     clearButtonMode='while-editing'
+                                    value={this.state.description}
                                     onChangeText={(text) => this.onchangeText("description", text)}
                                     multiline={true}
                                 />
                             </Item>
                         </ScrollView>
+                        
                         <Button
                             full
                             rounded
                             success
                             onPress={() => this.handleSubmitForm()}
                             style={[commonStyles.defaultMargin]}>
-                            <Text>Tạo mới</Text>
+                            {
+                                (this.state.loading) 
+                                ? 
+                                (<Spinner/>)
+                                : 
+                                (<Text>Cập nhật</Text>)
+                            }
                         </Button>
                     </Form>
                 </Content>
@@ -222,13 +263,15 @@ export class ProductDetail extends Component {
 
 function mapStateToProps(state) {
     return {
-        products: state.products
+        products: state.products,
+        categories: state.categories
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
-        ...productActions
+        ...productActions,
+        getListCategoriesByCondition
     }, dispatch)
 }
 
