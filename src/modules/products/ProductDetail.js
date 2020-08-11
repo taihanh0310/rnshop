@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import {
-    Text,
     View,
     Dimensions,
     Image,
@@ -9,6 +8,18 @@ import {
     TextInput
 }
     from 'react-native'
+import {
+    Container,
+    Content,
+    Text,
+    Form,
+    Item,
+    Input,
+    Label,
+    Picker,
+    Button,
+    Icon
+} from "native-base"
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as productActions from '../../actions/ProductActions'

@@ -57,17 +57,18 @@ export class CategoryList extends Component {
 
     renderItem = ({ item }) => {
         return (
-            <Card key={'cat-' + item.id}>
-                <CardItem header>
-                    <Text>{item.name}</Text>
-                </CardItem>
-                <CardItem cardBody>
-                    <Image 
-                    resizeMode='contain'
-                    source={{ uri: item.image != null ? item.image.src : 'https://annhienstore.com/wp-content/uploads/woocommerce-placeholder-300x300.png', cache: 'only-if-cached' }} 
-                    style={{ height: 200, width: null, flex: 1 }} />
-                </CardItem>
-            </Card>
+            <ListItem key={'cat-' + item.id}>
+                <Left>
+                    <Thumbnail
+                        resizeMode='contain'
+                        source={{ uri: item.image != null ? item.image.src : 'https://annhienstore.com/wp-content/uploads/woocommerce-placeholder-300x300.png', cache: 'only-if-cached' }}
+                    />
+                </Left>
+                <Body><Text numberOfLines={2}>{item.name}</Text></Body>
+                <Right>
+                    <Text>{item.count}</Text>
+                </Right>
+            </ListItem>
         )
     }
 
