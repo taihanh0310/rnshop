@@ -19,7 +19,7 @@ export default function categoriesReducers(state = INITIAL_STATE, action) {
     case GET_LIST_CATEGORY: {
       return {
         ...state,
-        collection: action.payload.collection
+        collection: [...state.collection, ...action.payload.collection]
       }
     }
     case CLEAR_CATEGORY_LIST: {

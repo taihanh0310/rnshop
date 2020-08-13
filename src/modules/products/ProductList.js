@@ -75,7 +75,10 @@ export class ProductList extends Component {
             page: this.state.page,
             search: this.state.search
         }
-        this.fetchListProduct(condition)
+        setTimeout(() => {
+            this.fetchListProduct(condition)
+        }, 5000);
+
     }
 
     fetchListProduct(condition) {
@@ -113,28 +116,41 @@ export class ProductList extends Component {
 
     _handleRefresh = () => {
         let condition = {
-            page: this.state.page,
+            page: 1,
             search: ''
         }
-        this.props.getListProductByCondition(condition);
+
+        this.setState({
+            loading: true,
+            page: 1,
+            search: ''
+        })
+        this.props.clearListProduct() // clear product before render new
+
+        setTimeout(() => {
+            this.props.getListProductByCondition(condition);
+            this.setState({
+                loading: false,
+            })
+        }, 4000);
+
     }
 
     _handleLoadMore = () => {
-        this.setState({
-            loading: true
-        })
         let page = this.state.page + 1
 
         let condition = {
             page: page,
             search: this.state.search
         }
+        setTimeout(() => {
+            console.log("page", condition.page)
+            this.fetchListProduct(condition)
+            this.setState({
+                page: page
+            })
+        }, 5000);
 
-        this.fetchListProduct(condition)
-        this.setState({
-            loading: false,
-            page: page
-        })
     }
 
     updateSearch = (search) => {
@@ -166,9 +182,9 @@ export class ProductList extends Component {
     renderProductItem = ({ item }) => {
         return (<ListItem thumbnail onPress={() => this.gotoProductDetail(item)} key={item.id}>
             <Left>
-                <Thumbnail 
-                    resizeMode='contain' 
-                    square 
+                <Thumbnail
+                    resizeMode='contain'
+                    square
                     source={{ uri: item.images.length > 0 ? item.images[0].src : 'https://annhienstore.com/wp-content/uploads/woocommerce-placeholder-300x300.png', cache: 'only-if-cached' }} />
             </Left>
             <Body>
@@ -190,12 +206,15 @@ export class ProductList extends Component {
             page: 1,
             search: this.props.products.search
         }
+        this.props.clearListProduct()
+        setTimeout(() => {
+            this.fetchListProduct(condition)
 
-        this.fetchListProduct(condition)
+            this.setState({
+                loading: false,
+            })
+        }, 5000);
 
-        this.setState({
-            loading: false,
-        })
     }
 
     toggleModal = () => {
@@ -219,21 +238,26 @@ export class ProductList extends Component {
         return (
             <Container>
                 <Header searchBar rounded>
-                    <Item>
-                        <Input
-                            placeholder="Tìm sản phẩm"
-                            onChangeText={(text) => this.updateSearch(text)}
-                            value={products.search}
-                            autoCapitalize="none"
-                            underlineColorAndroid="transparent"
-                            autoFocus={false}
-                            disableFullscreenUI={false}
-                        />
-                        <Icon name="search" />
-                    </Item>
-                    <Button transparent onPress={this.searchResult}>
-                        <Text>Tìm</Text>
-                    </Button>
+                    <Left></Left>
+                    <Body>
+                        <Item>
+                            <Input
+                                placeholder="Tìm sản phẩm"
+                                onChangeText={(text) => this.updateSearch(text)}
+                                value={products.search}
+                                autoCapitalize="none"
+                                underlineColorAndroid="transparent"
+                                autoFocus={false}
+                                disableFullscreenUI={false}
+                            />
+                            <Icon name="search" />
+                        </Item>
+                    </Body>
+                    <Right>
+                        <Button transparent onPress={this.searchResult}>
+                            <Text>Tìm</Text>
+                        </Button>
+                    </Right>
                 </Header>
                 <View style={{
                     flex: 1,
@@ -297,11 +321,11 @@ export class ProductList extends Component {
                                 onRefresh={this._handleRefresh}
                                 refreshing={this.state.refreshing}
                                 onEndReached={this._handleLoadMore}
-                                onEndReachedThreshold={0.1}
+                                onEndReachedThreshold={0.2}
                             />)
                             :
                             (<Content>
-                                <Spinner color='green'/>
+                                <Spinner color='green' />
                             </Content>)
                     }
 

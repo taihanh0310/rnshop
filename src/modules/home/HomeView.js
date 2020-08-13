@@ -1,9 +1,43 @@
 import React, { Component } from 'react'
-import { View, Text, SafeAreaView } from 'react-native'
-import PropTypes from 'prop-types'
+import {
+    Dimensions,
+    View,
+    ScrollView,
+    FlatList,
+    ActivityIndicator,
+    Image,
+    TouchableOpacity,
+    StyleSheet,
+    Modal,
+    Vibration
+} from 'react-native'
+import {
+    Container,
+    Header,
+    Item,
+    Icon,
+    Input,
+    Button,
+    Content,
+    Card,
+    CardItem,
+    Spinner,
+    Body,
+    List,
+    ListItem,
+    Thumbnail,
+    Text,
+    Left,
+    Right,
+    Fab,
+} from 'native-base'
+const { width, height } = Dimensions.get('window')
+
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as productActions from '../../actions/ProductActions'
+import * as categoryActions from '../../actions/CategoryActions'
+import * as brandsActions from '../../actions/BrandActions'
 
 export class HomeView extends Component {
     constructor(props){
@@ -11,7 +45,6 @@ export class HomeView extends Component {
     }
 
     componentDidMount(){
-        alert("home view")
     }
 
     // 01 fetch list categories - scroll ngang
@@ -25,27 +58,32 @@ export class HomeView extends Component {
     // 03 fetch list product by category sua
     // 03 fetch list product by category mi tom
 
-    
-
     render() {
         return (
-            
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'red' }}>
-                <Text> HomeView </Text>
-            </View>
+            <Container>
+                <Header searchBar rounded>
+                </Header>
+                <Content>
+
+                </Content>
+            </Container>
         )
     }
 }
 
 function mapStateToProps(state) {
     return {
-        products: state.products
+        products: state.products,
+        brands: state.brands,
+        categories: state.categories
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
-        ...productActions
+        ...productActions,
+        ...categoryActions,
+        ...brandsActions
     }, dispatch)
 }
 

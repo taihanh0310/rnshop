@@ -2,6 +2,7 @@
 
 import {
   GET_LIST_PRODUCT,
+  GET_LIST_PRODUCT_LOAD_MORE,
   GET_PRODUCT_DETAIL,
   CLEAR_PRODUCT_LIST,
   UPDATE_PRODUCT_SEARCH
@@ -19,8 +20,15 @@ export default function productsReducers(state = INITIAL_STATE, action) {
     case GET_LIST_PRODUCT: {
       return {
         ...state,
-        products: action.payload.products
+        products: [...state.products, ...action.payload.products]
       }
+    }
+    case GET_LIST_PRODUCT_LOAD_MORE: {
+      console.log("array", [...state.products, ...action.payload.products])
+      return {
+        ...state,
+        products: [...state.products, ...action.payload.products]
+      } 
     }
     case GET_PRODUCT_DETAIL: {
       return {

@@ -23,7 +23,6 @@ export function getListCategoriesByCondition(condition) {
                 else{
                     url = `${Constants.URL.wc}products/categories?page=${condition.page}&per_page=${condition.per_page}&consumer_key=${Constants.Keys.ConsumerKey}&consumer_secret=${Constants.Keys.ConsumerSecret}`
                 }
-                console.log(url)
                 fetch(url)
                     .then((response) => response.json())
                     .then((data) => {

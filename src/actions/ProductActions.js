@@ -2,9 +2,11 @@ import Constants from '../constants/Constants'
 
 import {
     GET_LIST_PRODUCT,
+    GET_LIST_PRODUCT_LOAD_MORE,
     GET_PRODUCT_DETAIL,
     CLEAR_PRODUCT_LIST,
-    UPDATE_PRODUCT_SEARCH
+    UPDATE_PRODUCT_SEARCH,
+    
 } from '../constants/ProductType'
 
 
@@ -43,6 +45,7 @@ export function getListProductByCondition(condition) {
                 let url = null;
                 if(condition.search != ''){
                     url = `${Constants.URL.wc}products?page=${condition.page}&per_page=20&search=${condition.search}&consumer_key=${Constants.Keys.ConsumerKey}&consumer_secret=${Constants.Keys.ConsumerSecret}`
+                    console.log(url)
                 }
                 else{
                     url = `${Constants.URL.wc}products?page=${condition.page}&per_page=20&consumer_key=${Constants.Keys.ConsumerKey}&consumer_secret=${Constants.Keys.ConsumerSecret}`
@@ -66,6 +69,35 @@ export function getListProductByCondition(condition) {
         });
     };
 }
+
+export function getListProductMoreByCondition(condition) {
+    return (dispatch, getState) => {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                let url = null;
+                if(condition.search != ''){
+                    url = `${Constants.URL.wc}products?page=${condition.page}&per_page=20&search=${condition.search}&consumer_key=${Constants.Keys.ConsumerKey}&consumer_secret=${Constants.Keys.ConsumerSecret}`
+                }
+                else{
+                    url = `${Constants.URL.wc}products?page=${condition.page}&per_page=20&consumer_key=${Constants.Keys.ConsumerKey}&consumer_secret=${Constants.Keys.ConsumerSecret}`
+                }
+                fetch(url)
+                    .then((response) => response.json())
+                    .then((data) => {
+                        resolve();
+                        dispatch({
+                            type: GET_LIST_PRODUCT_LOAD_MORE,
+                            payload: { products: data }
+                        });
+                    })
+                    .catch((error) => {
+                       console.log(error)
+                    });
+            }, 500);
+        });
+    };
+}
+
 
 /**
  * 

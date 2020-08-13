@@ -41,20 +41,45 @@ export class CategoryList extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            active: false
+            active: false,
+            loading: true,
+            refreshing: false,
+            loadingMore: false,
+            per_page: 20,
+            page: 1,
+            search: ''
         };
         this.renderItem = this.renderItem.bind(this)
+        this.getListCategoriesByCondition = this.getListCategoriesByCondition.bind(this)
+        this._handleRefresh = this._handleRefresh.bind(this)
+        this._handleLoadMore = this._handleLoadMore.bind(this)
+        this._renderFooter = this._renderFooter.bind(this)
     }
+
+    /**
+     * 
+     */
     componentDidMount() {
+
         let condition = {
             page: 1,
             per_page: 20,
             search: ''
         }
 
-        this.props.getListCategoriesByCondition(condition)
+        setTimeout(() => {
+            this.getListCategoriesByCondition(condition)
+
+            this.setState({
+                loading: false,
+            })
+        }, 4000);
     }
 
+    /**
+     * 
+     * @param {*} param0 
+     */
     renderItem = ({ item }) => {
         return (
             <ListItem thumbnail key={'cat-' + item.id}>
@@ -72,6 +97,78 @@ export class CategoryList extends Component {
                 </Right>
             </ListItem>
         )
+    }
+
+    getListCategoriesByCondition(condition) {
+        this.props.getListCategoriesByCondition(condition)
+    }
+
+    /**
+     * 
+     */
+    _handleRefresh = () => {
+        let condition = {
+            page: 1,
+            search: '',
+            per_page: this.state.per_page
+        }
+
+        this.setState({
+            page: 1,
+            search: '',
+            refreshing: true
+        })
+
+        setTimeout(() => {
+            this.getListCategoriesByCondition(condition);
+        }, 4000);
+    }
+
+    /**
+     * 
+     */
+    _handleLoadMore = () => {
+        let page = this.state.page + 1
+
+        let condition = {
+            page: page,
+            search: this.state.search,
+            search: '',
+            per_page: this.state.per_page
+        }
+        this.setState({
+            loadingMore: true
+        })
+        setTimeout(() => {
+            this.getListCategoriesByCondition(condition)
+            this.setState({
+                page: page
+            })
+        }, 4000);
+    }
+
+    _renderFooter = ({ item }) => {
+        console.log(item)
+        return null
+        // if (!this.state.loadingMore) return null;
+
+        // return (
+        //     <View
+        //         key={'f-' + item.id.toString()}
+        //         style={{
+        //             position: 'relative',
+        //             width: width,
+        //             height: height,
+        //             paddingVertical: 20,
+        //             borderTopWidth: 1,
+        //             marginTop: 10,
+        //             marginBottom: 10,
+        //             borderColor: 'green'
+        //         }}
+        //     >
+        //         <ActivityIndicator animating size="large" />
+        //     </View>
+        // );
     }
 
     render() {
@@ -94,11 +191,10 @@ export class CategoryList extends Component {
                 </Header>
                 <Content>
                     {
-                        (this.props.categories.isLoading)
+                        (this.state.loading)
                             ?
                             (
                                 <View>
-                                    <Text>{this.props.categories.isLoading}</Text>
                                     <Spinner color='green' />
                                 </View>
                             )
@@ -112,7 +208,11 @@ export class CategoryList extends Component {
                                     data={this.props.categories.collection}
                                     renderItem={this.renderItem}
                                     keyExtractor={item => item.id}
-                                    onEndReachedThreshold={0.1}
+                                    ListFooterComponent={this._renderFooter}
+                                    onRefresh={this._handleRefresh}
+                                    refreshing={this.state.refreshing}
+                                    onEndReached={this._handleLoadMore}
+                                    onEndReachedThreshold={0.5}
                                 />
                             )
                     }

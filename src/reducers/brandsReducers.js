@@ -17,7 +17,7 @@ const INITIAL_STATE = {
       case GET_LIST_BRAND: {
         return {
           ...state,
-          collection: action.payload.collection
+          collection: [...state.collection, ...action.payload.collection]
         }
       }
       case CLEAR_BRAND_LIST: {
